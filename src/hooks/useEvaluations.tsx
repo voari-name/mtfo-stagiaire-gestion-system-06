@@ -1,41 +1,11 @@
+
 import { useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { EvaluationType } from "@/types/evaluations";
 import { generateEvaluationPDF } from "@/utils/evaluationPdfGenerator";
 
-// Sample data for evaluations
-const initialEvaluations = [
-  {
-    id: 1,
-    firstName: "Jean",
-    lastName: "Rakoto",
-    startDate: "2025-03-01",
-    endDate: "2025-06-01",
-    grade: 16,
-    comment: "Très bon stagiaire, autonome et créatif."
-  },
-  {
-    id: 2,
-    firstName: "Marie",
-    lastName: "Razafy",
-    startDate: "2025-02-15",
-    endDate: "2025-05-15",
-    grade: 14,
-    comment: "Bon travail, mais peut améliorer sa communication."
-  },
-  {
-    id: 3,
-    firstName: "Hery",
-    lastName: "Randriamaro",
-    startDate: "2025-01-10",
-    endDate: "2025-04-10",
-    grade: 18,
-    comment: "Excellent stagiaire, compétences techniques remarquables."
-  }
-];
-
 export const useEvaluations = () => {
-  const [evaluations, setEvaluations] = useState<EvaluationType[]>(initialEvaluations);
+  const [evaluations, setEvaluations] = useState<EvaluationType[]>([]);
   const [currentEvaluation, setCurrentEvaluation] = useState<EvaluationType | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
@@ -82,6 +52,7 @@ export const useEvaluations = () => {
           description: `Le certificat d'évaluation pour ${evaluation.firstName} ${evaluation.lastName} a été téléchargé.`,
         });
       } catch (error) {
+        console.error('Erreur lors de la génération du PDF:', error);
         toast({
           title: "Erreur",
           description: "Une erreur s'est produite lors de la génération du certificat.",
