@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +8,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { generateInternPDF } from "@/utils/pdfGenerator";
 import { Search } from "lucide-react";
 
 // Sample data for the internship management
@@ -129,25 +127,6 @@ const Internships = () => {
     });
   };
 
-  const handleGeneratePdf = (internId: number) => {
-    const intern = interns.find(i => i.id === internId);
-    if (intern) {
-      try {
-        generateInternPDF(intern);
-        toast({
-          title: "PDF généré avec succès",
-          description: `Le certificat de stage pour ${intern.firstName} ${intern.lastName} a été téléchargé.`,
-        });
-      } catch (error) {
-        toast({
-          title: "Erreur",
-          description: "Une erreur s'est produite lors de la génération du PDF.",
-          variant: "destructive",
-        });
-      }
-    }
-  };
-
   const renderInternCard = (intern) => (
     <Card key={intern.id} className="overflow-hidden">
       <CardContent className="p-0">
@@ -189,14 +168,11 @@ const Internships = () => {
           </div>
           
           <div className="bg-gray-50 p-6 flex flex-col justify-center space-y-3 md:w-48">
-            <Button onClick={() => handleGeneratePdf(intern.id)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                <polyline points="14 2 14 8 20 8" />
-                <path d="M9 15h6" /><path d="M9 18h6" /><path d="M9 12h2" />
-              </svg>
-              Télécharger PDF
-            </Button>
+            {intern.status === 'fin' && (
+              <div className="text-sm text-green-600 font-medium mb-2">
+                ✓ Certificat disponible dans les évaluations
+              </div>
+            )}
             <Button variant="outline" onClick={() => handleEditIntern(intern)}>
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                 <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
