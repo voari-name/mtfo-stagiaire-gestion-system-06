@@ -33,17 +33,12 @@ const Projects = () => {
       <div className="space-y-6">
         <div className="flex justify-between items-center">
           <h2 className="text-2xl font-bold">Projets</h2>
-          <Button onClick={() => setIsCreateDialogOpen(true)}>
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-              <path d="M5 12h14" /><path d="M12 5v14" />
-            </svg>
-            Nouveau projet
-          </Button>
         </div>
 
         <Tabs defaultValue="all">
           <TabsList className="mb-6">
             <TabsTrigger value="all">Tous</TabsTrigger>
+            <TabsTrigger value="debut">Début</TabsTrigger>
             <TabsTrigger value="active">En cours</TabsTrigger>
             <TabsTrigger value="completed">Terminés</TabsTrigger>
           </TabsList>
@@ -51,6 +46,16 @@ const Projects = () => {
           <TabsContent value="all" className="space-y-6">
             <ProjectsList 
               projects={projects} 
+              calculateProgress={calculateProgress}
+              onViewDetails={handleViewDetails}
+              onEditProject={handleEditProject}
+              onDeleteProject={deleteProject}
+            />
+          </TabsContent>
+          
+          <TabsContent value="debut">
+            <ProjectsList 
+              projects={projects.filter(p => p.interns.some(i => i.status === "début"))} 
               calculateProgress={calculateProgress}
               onViewDetails={handleViewDetails}
               onEditProject={handleEditProject}

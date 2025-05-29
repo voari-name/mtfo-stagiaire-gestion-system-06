@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -360,6 +361,7 @@ const Internships = () => {
         <Tabs defaultValue="all">
           <TabsList className="mb-6">
             <TabsTrigger value="all">Tous</TabsTrigger>
+            <TabsTrigger value="debut">Début</TabsTrigger>
             <TabsTrigger value="ongoing">En cours</TabsTrigger>
             <TabsTrigger value="completed">Terminés</TabsTrigger>
           </TabsList>
@@ -372,6 +374,16 @@ const Internships = () => {
                 <p className="text-muted-foreground">
                   {searchTerm ? "Aucun stagiaire trouvé pour cette recherche" : "Aucun stagiaire pour le moment"}
                 </p>
+              </div>
+            )}
+          </TabsContent>
+          
+          <TabsContent value="debut" className="space-y-6">
+            {filteredInterns.filter(intern => intern.status === 'début').length > 0 ? (
+              filteredInterns.filter(intern => intern.status === 'début').map(renderInternCard)
+            ) : (
+              <div className="text-center py-10">
+                <p className="text-muted-foreground">Aucun stage au début pour le moment</p>
               </div>
             )}
           </TabsContent>

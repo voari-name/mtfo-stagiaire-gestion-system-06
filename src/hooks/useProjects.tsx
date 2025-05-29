@@ -14,7 +14,7 @@ export interface Task {
 export interface Intern {
   id: number;
   name: string;
-  status: string;
+  status: "début" | "en cours" | "fin";
   completion: number;
 }
 
