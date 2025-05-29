@@ -1,6 +1,7 @@
 
 import React from "react";
 import { NotificationBar } from "./NotificationBar";
+import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar";
 
 interface HeaderProps {
   title: string;
@@ -26,10 +27,17 @@ export const Header = ({ title, username = "" }: HeaderProps) => {
           <NotificationBar />
           {username && (
             <>
-              <span className="text-sm text-gray-600">Bienvenue, {username}</span>
-              <div className="h-8 w-8 rounded-full bg-blue-800 flex items-center justify-center text-white text-sm hover-scale transition-all duration-300">
-                {initials}
-              </div>
+              <span className="text-sm text-gray-600 hidden md:block">Bienvenue, {username}</span>
+              <Avatar className="h-10 w-10 hover-scale transition-all duration-300">
+                <AvatarImage 
+                  src="/lovable-uploads/52778f7b-9712-4ba5-91b9-65eeb655d7b5.png" 
+                  alt={username}
+                  className="object-cover"
+                />
+                <AvatarFallback className="bg-blue-800 text-white text-sm">
+                  {initials}
+                </AvatarFallback>
+              </Avatar>
             </>
           )}
         </div>

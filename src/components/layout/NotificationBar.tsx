@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
 import { Badge } from "@/components/ui/badge";
@@ -10,32 +10,52 @@ interface Notification {
   message: string;
   time: string;
   read: boolean;
+  type: 'success' | 'info' | 'warning';
 }
 
 export const NotificationBar = () => {
-  const [notifications, setNotifications] = useState<Notification[]>([
-    {
-      id: 1,
-      title: "Nouveau stagiaire",
-      message: "Jean Rakoto a été ajouté",
-      time: "Il y a 5 minutes",
-      read: false
-    },
-    {
-      id: 2,
-      title: "Évaluation créée",
-      message: "Évaluation de Marie Razafy créée",
-      time: "Il y a 1 heure",
-      read: false
-    }
-  ]);
+  const [notifications, setNotifications] = useState<Notification[]>([]);
 
   const unreadCount = notifications.filter(n => !n.read).length;
+
+  const addNotification = (notification: Omit<Notification, 'id' | 'time' | 'read'>) => {
+    const newNotification: Notification = {
+      ...notification,
+      id: Date.now(),
+      time: new Date().toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' }),
+      read: false
+    };
+    setNotifications(prev => [newNotification, ...prev.slice(0, 9)]);
+  };
+
+  // Listen for custom events
+  useEffect(() => {
+    const handleCustomNotification = (event: CustomEvent) => {
+      addNotification(event.detail);
+    };
+
+    window.addEventListener('customNotification', handleCustomNotification as EventListener);
+    
+    return () => {
+      window.removeEventListener('customNotification', handleCustomNotification as EventListener);
+    };
+  }, []);
 
   const markAsRead = (id: number) => {
     setNotifications(notifications.map(n => 
       n.id === id ? { ...n, read: true } : n
     ));
+  };
+
+  const getNotificationIcon = (type: string) => {
+    switch (type) {
+      case 'success':
+        return '✅';
+      case 'warning':
+        return '⚠️';
+      default:
+        return 'ℹ️';
+    }
   };
 
   return (
@@ -59,7 +79,7 @@ export const NotificationBar = () => {
           {notifications.length === 0 ? (
             <p className="text-sm text-muted-foreground">Aucune notification</p>
           ) : (
-            <div className="space-y-3">
+            <div className="space-y-3 max-h-80 overflow-y-auto">
               {notifications.map((notification) => (
                 <div
                   key={notification.id}
@@ -70,9 +90,12 @@ export const NotificationBar = () => {
                 >
                   <div className="flex justify-between items-start">
                     <div className="flex-1">
-                      <p className="font-medium text-sm">{notification.title}</p>
-                      <p className="text-sm text-muted-foreground">{notification.message}</p>
-                      <p className="text-xs text-muted-foreground mt-1">{notification.time}</p>
+                      <div className="flex items-center gap-2">
+                        <span className="text-lg">{getNotificationIcon(notification.type)}</span>
+                        <p className="font-medium text-sm">{notification.title}</p>
+                      </div>
+                      <p className="text-sm text-muted-foreground mt-1">{notification.message}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Il y a {notification.time}</p>
                     </div>
                     {!notification.read && (
                       <div className="h-2 w-2 bg-blue-500 rounded-full"></div>
@@ -86,4 +109,10 @@ export const NotificationBar = () => {
       </PopoverContent>
     </Popover>
   );
+};
+
+// Global function to trigger notifications
+export const triggerNotification = (notification: { title: string; message: string; type: 'success' | 'info' | 'warning' }) => {
+  const event = new CustomEvent('customNotification', { detail: notification });
+  window.dispatchEvent(event);
 };

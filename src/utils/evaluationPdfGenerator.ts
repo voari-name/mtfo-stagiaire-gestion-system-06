@@ -160,7 +160,7 @@ export const generateEvaluationPDF = async (evaluation: EvaluationPdfData) => {
   yPosition += 20;
   
   // Signature section with official layout
-  const signatureY = Math.max(yPosition, pageHeight - 80);
+  const signatureY = Math.max(yPosition, pageHeight - 100);
   
   // Date and place
   doc.setFont('helvetica', 'bold');
@@ -168,23 +168,40 @@ export const generateEvaluationPDF = async (evaluation: EvaluationPdfData) => {
   doc.setFont('helvetica', 'normal');
   doc.text(new Date().toLocaleDateString('fr-FR'), margin + 65, signatureY);
   
-  // Director signature
+  // Director signature section
   doc.setFont('helvetica', 'bold');
   doc.text('Le Directeur du Système d\'Information', pageWidth - margin - 80, signatureY);
   
+  // Add signature image
+  try {
+    const signatureUrl = '/lovable-uploads/52778f7b-9712-4ba5-91b9-65eeb655d7b5.png';
+    doc.addImage(signatureUrl, 'PNG', pageWidth - margin - 70, signatureY + 5, 40, 20);
+  } catch (error) {
+    console.log('Signature image could not be loaded');
+  }
+  
   // Signature line
   doc.setLineWidth(0.5);
-  doc.line(pageWidth - margin - 80, signatureY + 25, pageWidth - margin - 10, signatureY + 25);
+  doc.line(pageWidth - margin - 80, signatureY + 30, pageWidth - margin - 10, signatureY + 30);
   
   // Supervisor signature
-  doc.text('Le Maître de Stage', margin + 20, signatureY + 35);
-  doc.line(margin + 20, signatureY + 50, margin + 80, signatureY + 50);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Le Maître de Stage', margin + 20, signatureY + 40);
+  doc.line(margin + 20, signatureY + 55, margin + 80, signatureY + 55);
   
   // Signature placeholder
   doc.setFontSize(8);
   doc.setFont('helvetica', 'italic');
-  doc.text('Cachet et signature', pageWidth - margin - 50, signatureY + 30, { align: 'center' });
-  doc.text('Signature', margin + 50, signatureY + 55, { align: 'center' });
+  doc.text('Cachet et signature', pageWidth - margin - 50, signatureY + 35, { align: 'center' });
+  doc.text('Signature', margin + 50, signatureY + 60, { align: 'center' });
+  
+  // Official stamp placeholder
+  doc.setLineWidth(1);
+  doc.setDrawColor(100, 100, 100);
+  doc.circle(pageWidth - margin - 40, signatureY + 50, 15);
+  doc.setFontSize(6);
+  doc.text('CACHET', pageWidth - margin - 40, signatureY + 50, { align: 'center' });
+  doc.text('OFFICIEL', pageWidth - margin - 40, signatureY + 52, { align: 'center' });
   
   // Page border for official look
   doc.setLineWidth(1);

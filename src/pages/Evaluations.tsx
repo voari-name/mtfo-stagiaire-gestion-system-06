@@ -62,8 +62,8 @@ const Evaluations = () => {
             <h3 className="text-lg font-semibold text-gray-700">Stagiaires terminés en attente d'évaluation</h3>
             <div className="grid grid-cols-1 gap-4">
               {completedInterns
-                .filter(intern => !evaluations.some(eval => 
-                  eval.firstName === intern.firstName && eval.lastName === intern.lastName
+                .filter(intern => !evaluations.some(evalItem => 
+                  evalItem.firstName === intern.firstName && evalItem.lastName === intern.lastName
                 ))
                 .map((intern) => (
                   <Card key={intern.id} className="overflow-hidden border-l-4 border-l-blue-500">
