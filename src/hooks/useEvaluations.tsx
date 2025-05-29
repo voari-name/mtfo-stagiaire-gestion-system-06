@@ -42,11 +42,12 @@ export const useEvaluations = () => {
     });
   };
 
-  const handleGeneratePdf = (id: number) => {
+  const handleGeneratePdf = async (id: number) => {
     const evaluation = evaluations.find(e => e.id === id);
     if (evaluation) {
       try {
-        generateEvaluationPDF(evaluation);
+        console.log('Génération du PDF pour:', evaluation);
+        await generateEvaluationPDF(evaluation);
         toast({
           title: "Certificat généré avec succès",
           description: `Le certificat d'évaluation pour ${evaluation.firstName} ${evaluation.lastName} a été téléchargé.`,

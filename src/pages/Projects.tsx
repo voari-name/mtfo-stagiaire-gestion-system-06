@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import ProjectsList from "@/components/projects/ProjectsList";
 import ProjectDetails from "@/components/projects/ProjectDetails";
 import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
+import EditProjectDialog from "@/components/projects/EditProjectDialog";
 import { useProjects } from "@/hooks/useProjects";
 
 const Projects = () => {
@@ -13,9 +14,15 @@ const Projects = () => {
     projects,
     selectedProject,
     isDetailsOpen,
+    isEditMode,
     setIsDetailsOpen,
+    setIsEditMode,
     handleViewDetails,
+    handleEditProject,
+    handleSaveProject,
+    handleDeleteProject,
     addProject,
+    updateSelectedProject,
     calculateProgress,
     getStatusColor
   } = useProjects();
@@ -47,6 +54,8 @@ const Projects = () => {
               projects={projects} 
               calculateProgress={calculateProgress}
               onViewDetails={handleViewDetails}
+              onEditProject={handleEditProject}
+              onDeleteProject={handleDeleteProject}
             />
           </TabsContent>
           
@@ -55,6 +64,8 @@ const Projects = () => {
               projects={projects.filter(p => p.interns.some(i => i.status === "en cours"))} 
               calculateProgress={calculateProgress}
               onViewDetails={handleViewDetails}
+              onEditProject={handleEditProject}
+              onDeleteProject={handleDeleteProject}
             />
           </TabsContent>
           
@@ -63,6 +74,8 @@ const Projects = () => {
               projects={projects.filter(p => p.interns.every(i => i.status === "fin"))} 
               calculateProgress={calculateProgress}
               onViewDetails={handleViewDetails}
+              onEditProject={handleEditProject}
+              onDeleteProject={handleDeleteProject}
             />
           </TabsContent>
         </Tabs>
@@ -70,9 +83,17 @@ const Projects = () => {
 
       <ProjectDetails 
         project={selectedProject} 
-        open={isDetailsOpen} 
+        open={isDetailsOpen && !isEditMode} 
         onOpenChange={setIsDetailsOpen} 
         getStatusColor={getStatusColor}
+      />
+
+      <EditProjectDialog
+        project={selectedProject}
+        open={isDetailsOpen && isEditMode}
+        onOpenChange={setIsDetailsOpen}
+        onSave={handleSaveProject}
+        onProjectChange={updateSelectedProject}
       />
 
       <CreateProjectDialog

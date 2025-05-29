@@ -46,36 +46,36 @@
   }
 
   .dark {
-    --background: 222 84% 4.9%;
+    --background: 217 32% 8%;
     --foreground: 210 40% 98%;
-    --card: 224 71.4% 4.1%;
+    --card: 217 32% 12%;
     --card-foreground: 210 40% 98%;
-    --popover: 224 71.4% 4.1%;
+    --popover: 217 32% 12%;
     --popover-foreground: 210 40% 98%;
-    --primary: 217 91% 60%;
-    --primary-foreground: 222.2 84% 4.9%;
-    --secondary: 48 96% 53%;
-    --secondary-foreground: 222.2 84% 4.9%;
-    --muted: 223 47% 11%;
-    --muted-foreground: 215.4 16.3% 56.9%;
-    --accent: 217 91% 60%;
-    --accent-foreground: 210 40% 98%;
+    --primary: 217 91% 65%;
+    --primary-foreground: 217 32% 8%;
+    --secondary: 45 93% 58%;
+    --secondary-foreground: 217 32% 8%;
+    --muted: 217 32% 15%;
+    --muted-foreground: 215.4 16.3% 70%;
+    --accent: 217 91% 65%;
+    --accent-foreground: 217 32% 8%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 210 40% 98%;
-    --border: 223 47% 11%;
-    --input: 223 47% 11%;
-    --ring: 217 91% 60%;
-    --sidebar-background: 222 84% 4.9%;
+    --border: 217 32% 18%;
+    --input: 217 32% 15%;
+    --ring: 217 91% 65%;
+    --sidebar-background: 217 32% 8%;
     --sidebar-foreground: 210 40% 98%;
-    --sidebar-primary: 217 91% 60%;
-    --sidebar-primary-foreground: 222.2 84% 4.9%;
-    --sidebar-accent: 223 47% 11%;
+    --sidebar-primary: 217 91% 65%;
+    --sidebar-primary-foreground: 217 32% 8%;
+    --sidebar-accent: 217 32% 15%;
     --sidebar-accent-foreground: 210 40% 98%;
-    --sidebar-border: 223 47% 11%;
-    --sidebar-ring: 217 91% 60%;
+    --sidebar-border: 217 32% 18%;
+    --sidebar-ring: 217 91% 65%;
   }
 
-  /* Mode sombre amélioré avec bleu et jaune */
+  /* Enhanced dark mode with blue theme */
   .dark body {
     background-color: hsl(var(--background));
     color: hsl(var(--foreground));
@@ -109,7 +109,31 @@
     background-color: hsl(var(--accent)) !important;
   }
 
-  /* Couleur pour le texte gold */
+  /* Enhanced sidebar styling for dark mode */
+  .dark [data-sidebar] {
+    background-color: hsl(var(--sidebar-background)) !important;
+    border-color: hsl(var(--sidebar-border)) !important;
+  }
+
+  .dark [data-sidebar] .sidebar-nav-item:hover {
+    background-color: hsl(var(--sidebar-accent)) !important;
+  }
+
+  .dark [data-sidebar] .sidebar-nav-item[data-active="true"] {
+    background-color: hsl(var(--sidebar-primary)) !important;
+    color: hsl(var(--sidebar-primary-foreground)) !important;
+  }
+
+  /* Blue accent colors */
+  .text-blue-accent {
+    color: hsl(var(--primary));
+  }
+  
+  .bg-blue-accent {
+    background-color: hsl(var(--primary));
+  }
+
+  /* Gold/Yellow accent */
   .text-gold {
     color: #d4af37;
   }

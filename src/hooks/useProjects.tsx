@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useToast } from "@/hooks/use-toast";
 
 // Types
 export type TaskStatus = "completed" | "in-progress" | "not-started";
@@ -27,56 +28,12 @@ export interface Project {
   tasks: Task[];
 }
 
-// Sample projects data with proper task status typing
-const initialProjects: Project[] = [
-  {
-    id: 1,
-    title: "Développement Web",
-    startDate: "2025-03-01",
-    endDate: "2025-06-01",
-    interns: [
-      { id: 1, name: "Jean Rakoto", status: "en cours", completion: 65 }
-    ],
-    tasks: [
-      { id: 1, name: "Conception de la base de données", status: "completed" },
-      { id: 2, name: "Développement Frontend", status: "in-progress" },
-      { id: 3, name: "Intégration API", status: "not-started" }
-    ]
-  },
-  {
-    id: 2,
-    title: "Gestion de Projet",
-    startDate: "2025-02-15",
-    endDate: "2025-05-15",
-    interns: [
-      { id: 2, name: "Marie Razafy", status: "en cours", completion: 45 }
-    ],
-    tasks: [
-      { id: 1, name: "Analyse des besoins", status: "completed" },
-      { id: 2, name: "Planification", status: "completed" },
-      { id: 3, name: "Suivi du projet", status: "in-progress" }
-    ]
-  },
-  {
-    id: 3,
-    title: "Analyse de données",
-    startDate: "2025-01-10",
-    endDate: "2025-04-10",
-    interns: [
-      { id: 3, name: "Hery Randriamaro", status: "fin", completion: 100 }
-    ],
-    tasks: [
-      { id: 1, name: "Collecte des données", status: "completed" },
-      { id: 2, name: "Nettoyage des données", status: "completed" },
-      { id: 3, name: "Analyse et visualisation", status: "completed" }
-    ]
-  }
-];
-
 export const useProjects = () => {
-  const [projects, setProjects] = useState<Project[]>(initialProjects);
+  const [projects, setProjects] = useState<Project[]>([]);
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isDetailsOpen, setIsDetailsOpen] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const { toast } = useToast();
 
   // Function to calculate overall project progress
   const calculateProgress = (tasks: Task[]) => {
@@ -88,10 +45,43 @@ export const useProjects = () => {
   const handleViewDetails = (project: Project) => {
     setSelectedProject(project);
     setIsDetailsOpen(true);
+    setIsEditMode(false);
+  };
+
+  const handleEditProject = (project: Project) => {
+    setSelectedProject({ ...project });
+    setIsEditMode(true);
+    setIsDetailsOpen(true);
+  };
+
+  const handleSaveProject = () => {
+    if (selectedProject) {
+      setProjects(projects.map(p => 
+        p.id === selectedProject.id ? selectedProject : p
+      ));
+      setIsEditMode(false);
+      toast({
+        title: "Projet mis à jour",
+        description: `Le projet "${selectedProject.title}" a été modifié avec succès.`,
+      });
+    }
+  };
+
+  const handleDeleteProject = (id: number) => {
+    setProjects(projects.filter(p => p.id !== id));
+    toast({
+      title: "Projet supprimé",
+      description: "Le projet a été supprimé avec succès.",
+      variant: "destructive"
+    });
   };
 
   const addProject = (newProject: Project) => {
     setProjects(prev => [...prev, newProject]);
+  };
+
+  const updateSelectedProject = (updatedProject: Project) => {
+    setSelectedProject(updatedProject);
   };
 
   const getStatusColor = (status: TaskStatus) => {
@@ -107,9 +97,15 @@ export const useProjects = () => {
     projects,
     selectedProject,
     isDetailsOpen,
+    isEditMode,
     setIsDetailsOpen,
+    setIsEditMode,
     handleViewDetails,
+    handleEditProject,
+    handleSaveProject,
+    handleDeleteProject,
     addProject,
+    updateSelectedProject,
     calculateProgress,
     getStatusColor
   };
