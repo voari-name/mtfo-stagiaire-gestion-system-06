@@ -1,9 +1,51 @@
 
-import React, { createContext, useContext, ReactNode } from "react";
-import { useInternships, Intern } from "@/hooks/useInternships";
-import { useProjects, Project } from "@/hooks/useProjects";
-import { useEvaluations } from "@/hooks/useEvaluations";
-import { EvaluationType } from "@/types/evaluations";
+import React, { createContext, useContext, ReactNode, useState } from "react";
+import { useToast } from "@/hooks/use-toast";
+
+// Import types
+export interface Intern {
+  id: number;
+  firstName: string;
+  lastName: string;
+  title: string;
+  email: string;
+  startDate: string;
+  endDate: string;
+  status: "début" | "en cours" | "fin";
+}
+
+export interface Task {
+  id: number;
+  name: string;
+  status: "completed" | "in-progress" | "not-started";
+}
+
+export interface ProjectIntern {
+  id: number;
+  name: string;
+  status: "début" | "en cours" | "fin";
+  completion: number;
+}
+
+export interface Project {
+  id: number;
+  title: string;
+  startDate: string;
+  endDate: string;
+  description?: string;
+  interns: ProjectIntern[];
+  tasks: Task[];
+}
+
+export interface EvaluationType {
+  id: number;
+  firstName: string;
+  lastName: string;
+  startDate: string;
+  endDate: string;
+  grade: number;
+  comment: string;
+}
 
 interface DataContextType {
   // Interns
@@ -29,81 +71,203 @@ interface DataContextType {
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const internshipHook = useInternships();
-  const projectHook = useProjects();
-  const evaluationHook = useEvaluations();
+  const [interns, setInterns] = useState<Intern[]>([]);
+  const [projects, setProjects] = useState<Project[]>([]);
+  const [evaluations, setEvaluations] = useState<EvaluationType[]>([]);
+  const { toast } = useToast();
 
-  // Sync completed interns to projects
-  const syncInternsToProjects = (completedInterns: Intern[]) => {
-    completedInterns.forEach(intern => {
-      const existingProject = projectHook.projects.find(p => 
-        p.title === intern.title && 
-        p.interns.some(i => i.name === `${intern.firstName} ${intern.lastName}`)
-      );
-
-      if (!existingProject) {
-        const newProject: Project = {
-          id: Date.now() + Math.random(),
-          title: intern.title,
-          startDate: intern.startDate,
-          endDate: intern.endDate,
-          description: `Projet de stage de ${intern.firstName} ${intern.lastName}`,
-          interns: [{
-            id: intern.id,
-            name: `${intern.firstName} ${intern.lastName}`,
-            status: "fin",
-            completion: 100
-          }],
-          tasks: [{
-            id: 1,
-            name: "Stage terminé",
-            status: "completed"
-          }]
-        };
-        projectHook.addProject(newProject);
-      }
-    });
+  // Notification trigger function
+  const triggerNotification = (notification: { title: string; message: string; type: 'success' | 'info' | 'warning' }) => {
+    const event = new CustomEvent('customNotification', { detail: notification });
+    window.dispatchEvent(event);
   };
 
-  const addIntern = (intern: Intern) => {
-    internshipHook.addIntern(intern);
-    if (intern.status === "fin") {
-      syncInternsToProjects([intern]);
+  // Intern functions
+  const addIntern = (newIntern: Intern) => {
+    setInterns(prev => [...prev, newIntern]);
+    toast({
+      title: "Stagiaire ajouté",
+      description: `${newIntern.firstName} ${newIntern.lastName} a été ajouté avec succès.`,
+    });
+    
+    triggerNotification({
+      title: "Nouveau stagiaire",
+      message: `${newIntern.firstName} ${newIntern.lastName} a été ajouté au système`,
+      type: 'success'
+    });
+
+    // Auto-create project if intern is completed
+    if (newIntern.status === "fin") {
+      syncInternToProject(newIntern);
     }
   };
 
-  const updateIntern = (intern: Intern) => {
-    internshipHook.updateIntern(intern);
-    if (intern.status === "fin") {
-      syncInternsToProjects([intern]);
+  const updateIntern = (updatedIntern: Intern) => {
+    setInterns(prev => prev.map(intern => 
+      intern.id === updatedIntern.id ? updatedIntern : intern
+    ));
+    toast({
+      title: "Stagiaire modifié",
+      description: `${updatedIntern.firstName} ${updatedIntern.lastName} a été modifié avec succès.`,
+    });
+    
+    triggerNotification({
+      title: "Stagiaire modifié",
+      message: `Informations de ${updatedIntern.firstName} ${updatedIntern.lastName} mises à jour`,
+      type: 'info'
+    });
+
+    // Auto-create project if intern is completed
+    if (updatedIntern.status === "fin") {
+      syncInternToProject(updatedIntern);
+    }
+  };
+
+  const deleteIntern = (id: number) => {
+    const intern = interns.find(i => i.id === id);
+    setInterns(prev => prev.filter(intern => intern.id !== id));
+    toast({
+      title: "Stagiaire supprimé",
+      description: "Le stagiaire a été supprimé avec succès.",
+      variant: "destructive"
+    });
+    
+    if (intern) {
+      triggerNotification({
+        title: "Stagiaire supprimé",
+        message: `${intern.firstName} ${intern.lastName} a été retiré du système`,
+        type: 'warning'
+      });
+    }
+  };
+
+  const getCompletedInterns = () => {
+    return interns.filter(intern => intern.status === "fin");
+  };
+
+  // Project functions
+  const addProject = (newProject: Project) => {
+    setProjects(prev => [...prev, newProject]);
+    toast({
+      title: "Projet ajouté",
+      description: `Le projet "${newProject.title}" a été créé avec succès.`,
+    });
+  };
+
+  const updateProject = (updatedProject: Project) => {
+    setProjects(prev => prev.map(project => 
+      project.id === updatedProject.id ? updatedProject : project
+    ));
+    toast({
+      title: "Projet mis à jour",
+      description: `Le projet "${updatedProject.title}" a été modifié avec succès.`,
+    });
+  };
+
+  const deleteProject = (id: number) => {
+    setProjects(prev => prev.filter(project => project.id !== id));
+    toast({
+      title: "Projet supprimé",
+      description: "Le projet a été supprimé avec succès.",
+      variant: "destructive"
+    });
+  };
+
+  // Evaluation functions
+  const addEvaluation = (newEvaluation: EvaluationType) => {
+    setEvaluations(prev => [...prev, newEvaluation]);
+    
+    triggerNotification({
+      title: "Évaluation créée",
+      message: `Évaluation de ${newEvaluation.firstName} ${newEvaluation.lastName} ajoutée`,
+      type: 'success'
+    });
+  };
+
+  const updateEvaluation = (updatedEvaluation: EvaluationType) => {
+    setEvaluations(prev => prev.map(evaluation => 
+      evaluation.id === updatedEvaluation.id ? updatedEvaluation : evaluation
+    ));
+    
+    toast({
+      title: "Évaluation mise à jour",
+      description: `L'évaluation de ${updatedEvaluation.firstName} ${updatedEvaluation.lastName} a été modifiée.`,
+    });
+    
+    triggerNotification({
+      title: "Évaluation modifiée",
+      message: `Évaluation de ${updatedEvaluation.firstName} ${updatedEvaluation.lastName} mise à jour`,
+      type: 'info'
+    });
+  };
+
+  const deleteEvaluation = (id: number) => {
+    const evaluation = evaluations.find(e => e.id === id);
+    setEvaluations(prev => prev.filter(evaluation => evaluation.id !== id));
+    toast({
+      title: "Évaluation supprimée",
+      description: "L'évaluation a été supprimée avec succès.",
+      variant: "destructive"
+    });
+    
+    if (evaluation) {
+      triggerNotification({
+        title: "Évaluation supprimée",
+        message: `Évaluation de ${evaluation.firstName} ${evaluation.lastName} supprimée`,
+        type: 'warning'
+      });
+    }
+  };
+
+  // Helper function to sync completed interns to projects
+  const syncInternToProject = (intern: Intern) => {
+    const existingProject = projects.find(p => 
+      p.title === intern.title && 
+      p.interns.some(i => i.name === `${intern.firstName} ${intern.lastName}`)
+    );
+
+    if (!existingProject) {
+      const newProject: Project = {
+        id: Date.now() + Math.random(),
+        title: intern.title,
+        startDate: intern.startDate,
+        endDate: intern.endDate,
+        description: `Projet de stage de ${intern.firstName} ${intern.lastName}`,
+        interns: [{
+          id: intern.id,
+          name: `${intern.firstName} ${intern.lastName}`,
+          status: "fin",
+          completion: 100
+        }],
+        tasks: [{
+          id: 1,
+          name: "Stage terminé",
+          status: "completed"
+        }]
+      };
+      setProjects(prev => [...prev, newProject]);
     }
   };
 
   const value: DataContextType = {
     // Interns
-    interns: internshipHook.interns,
+    interns,
     addIntern,
     updateIntern,
-    deleteIntern: internshipHook.deleteIntern,
-    getCompletedInterns: internshipHook.getCompletedInterns,
+    deleteIntern,
+    getCompletedInterns,
     
     // Projects
-    projects: projectHook.projects,
-    addProject: projectHook.addProject,
-    updateProject: (project: Project) => {
-      projectHook.updateSelectedProject(project);
-      projectHook.handleSaveProject();
-    },
-    deleteProject: projectHook.handleDeleteProject,
+    projects,
+    addProject,
+    updateProject,
+    deleteProject,
     
     // Evaluations
-    evaluations: evaluationHook.evaluations,
-    addEvaluation: evaluationHook.addEvaluation,
-    updateEvaluation: (evaluation: EvaluationType) => {
-      evaluationHook.handleEditEvaluation(evaluation);
-      evaluationHook.handleSaveEvaluation();
-    },
-    deleteEvaluation: evaluationHook.handleDeleteEvaluation
+    evaluations,
+    addEvaluation,
+    updateEvaluation,
+    deleteEvaluation
   };
 
   return (
