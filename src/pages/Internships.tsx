@@ -1,6 +1,6 @@
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,43 +9,10 @@ import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search } from "lucide-react";
-
-// Sample data for the internship management
-const initialInterns = [
-  { 
-    id: 1, 
-    firstName: "Jean", 
-    lastName: "Rakoto", 
-    title: "Développement Web", 
-    email: "jean.rakoto@example.com",
-    startDate: "2025-03-01",
-    endDate: "2025-06-01",
-    status: "en cours"
-  },
-  { 
-    id: 2, 
-    firstName: "Marie", 
-    lastName: "Razafy", 
-    title: "Gestion de Projet", 
-    email: "marie.razafy@example.com",
-    startDate: "2025-02-15",
-    endDate: "2025-05-15",
-    status: "en cours"
-  },
-  { 
-    id: 3, 
-    firstName: "Hery", 
-    lastName: "Randriamaro", 
-    title: "Analyse de données", 
-    email: "hery.r@example.com",
-    startDate: "2025-01-10",
-    endDate: "2025-04-10",
-    status: "fin"
-  },
-];
+import { useDataContext } from "@/contexts/DataContext";
 
 const Internships = () => {
-  const [interns, setInterns] = useState(initialInterns);
+  const { interns, addIntern, updateIntern } = useDataContext();
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
     firstName: "",
@@ -54,7 +21,7 @@ const Internships = () => {
     email: "",
     startDate: "",
     endDate: "",
-    status: "début"
+    status: "début" as "début" | "en cours" | "fin"
   });
   const [editingIntern, setEditingIntern] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -89,11 +56,11 @@ const Internships = () => {
 
   const handleAddIntern = () => {
     const newIntern = {
-      id: interns.length + 1,
+      id: Date.now(),
       ...formData
     };
     
-    setInterns([...interns, newIntern]);
+    addIntern(newIntern);
     setFormData({
       firstName: "",
       lastName: "",
@@ -105,10 +72,6 @@ const Internships = () => {
     });
     
     setIsDialogOpen(false);
-    toast({
-      title: "Stagiaire ajouté",
-      description: `${formData.firstName} ${formData.lastName} a été ajouté avec succès.`,
-    });
   };
 
   const handleEditIntern = (intern) => {
@@ -117,14 +80,8 @@ const Internships = () => {
   };
 
   const handleSaveEdit = () => {
-    setInterns(interns.map(intern => 
-      intern.id === editingIntern.id ? editingIntern : intern
-    ));
+    updateIntern(editingIntern);
     setIsEditDialogOpen(false);
-    toast({
-      title: "Stagiaire modifié",
-      description: `${editingIntern.firstName} ${editingIntern.lastName} a été modifié avec succès.`,
-    });
   };
 
   const renderInternCard = (intern) => (
@@ -216,6 +173,7 @@ const Internships = () => {
                 <DialogHeader>
                   <DialogTitle>Ajouter un nouveau stagiaire</DialogTitle>
                 </DialogHeader>
+                
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
@@ -312,6 +270,7 @@ const Internships = () => {
             </DialogHeader>
             {editingIntern && (
               <div className="grid gap-4 py-4">
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <Label htmlFor="editFirstName">Prénom</Label>

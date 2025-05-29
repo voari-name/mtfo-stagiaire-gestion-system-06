@@ -1,42 +1,39 @@
-
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
-import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import Index from "./pages/Index";
-import Login from "./pages/Login";
-import Profile from "./pages/Profile";
-import Internships from "./pages/Internships";
-import Evaluations from "./pages/Evaluations";
-import Projects from "./pages/Projects";
-import Settings from "./pages/Settings";
-import Dashboard from "./pages/Dashboard";
-import NotFound from "./pages/NotFound";
-import { SettingsProvider } from "./contexts/SettingsContext";
-
-const queryClient = new QueryClient();
+import { SettingsProvider } from '@/contexts/SettingsContext';
+import { DataProvider } from '@/contexts/DataContext';
+import Index from '@/pages/Index';
+import Login from '@/pages/Login';
+import Dashboard from '@/pages/Dashboard';
+import Projects from '@/pages/Projects';
+import Internships from '@/pages/Internships';
+import Evaluations from '@/pages/Evaluations';
+import Profile from '@/pages/Profile';
+import Settings from '@/pages/Settings';
+import NotFound from '@/pages/NotFound';
 
 function App() {
   return (
-    <QueryClientProvider client={queryClient}>
-      <SettingsProvider>
+    <SettingsProvider>
+      <DataProvider>
         <Router>
-          <div className="min-h-screen bg-gray-50">
+          <div className="min-h-screen bg-background">
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/login" element={<Login />} />
-              <Route path="/profile" element={<Profile />} />
+              <Route path="/dashboard" element={<Dashboard />} />
+              <Route path="/projects" element={<Projects />} />
               <Route path="/internships" element={<Internships />} />
               <Route path="/evaluations" element={<Evaluations />} />
-              <Route path="/projects" element={<Projects />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
-              <Route path="/dashboard" element={<Dashboard />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />
           </div>
         </Router>
-      </SettingsProvider>
-    </QueryClientProvider>
+      </DataProvider>
+    </SettingsProvider>
   );
 }
 

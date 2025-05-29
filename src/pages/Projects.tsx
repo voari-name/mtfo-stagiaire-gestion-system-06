@@ -8,10 +8,10 @@ import ProjectDetails from "@/components/projects/ProjectDetails";
 import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
 import EditProjectDialog from "@/components/projects/EditProjectDialog";
 import { useProjects } from "@/hooks/useProjects";
+import { useDataContext } from "@/contexts/DataContext";
 
 const Projects = () => {
   const {
-    projects,
     selectedProject,
     isDetailsOpen,
     isEditMode,
@@ -20,13 +20,12 @@ const Projects = () => {
     handleViewDetails,
     handleEditProject,
     handleSaveProject,
-    handleDeleteProject,
-    addProject,
     updateSelectedProject,
     calculateProgress,
     getStatusColor
   } = useProjects();
 
+  const { projects, deleteProject, addProject } = useDataContext();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   return (
@@ -55,7 +54,7 @@ const Projects = () => {
               calculateProgress={calculateProgress}
               onViewDetails={handleViewDetails}
               onEditProject={handleEditProject}
-              onDeleteProject={handleDeleteProject}
+              onDeleteProject={deleteProject}
             />
           </TabsContent>
           
@@ -65,7 +64,7 @@ const Projects = () => {
               calculateProgress={calculateProgress}
               onViewDetails={handleViewDetails}
               onEditProject={handleEditProject}
-              onDeleteProject={handleDeleteProject}
+              onDeleteProject={deleteProject}
             />
           </TabsContent>
           
@@ -75,7 +74,7 @@ const Projects = () => {
               calculateProgress={calculateProgress}
               onViewDetails={handleViewDetails}
               onEditProject={handleEditProject}
-              onDeleteProject={handleDeleteProject}
+              onDeleteProject={deleteProject}
             />
           </TabsContent>
         </Tabs>

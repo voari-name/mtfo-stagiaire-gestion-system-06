@@ -4,26 +4,31 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Progress } from "@/components/ui/progress";
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Project } from "@/hooks/useProjects";
 
 interface ProjectCardProps {
   project: Project;
   progress: number;
   onViewDetails: (project: Project) => void;
+  onEditProject: (project: Project) => void;
+  onDeleteProject: (id: number) => void;
 }
 
 const ProjectCard: React.FC<ProjectCardProps> = ({ 
   project, 
   progress, 
-  onViewDetails 
+  onViewDetails,
+  onEditProject,
+  onDeleteProject
 }) => {
   return (
     <Card key={project.id} className="hover:shadow-md transition-shadow">
       <CardHeader className="pb-2">
         <div className="flex justify-between items-start">
           <CardTitle className="text-xl">{project.title}</CardTitle>
-          <Badge variant={project.interns[0].status === "fin" ? "outline" : "default"}>
-            {project.interns[0].status === "fin" ? "Terminé" : "En cours"}
+          <Badge variant={project.interns[0]?.status === "fin" ? "outline" : "default"}>
+            {project.interns[0]?.status === "fin" ? "Terminé" : "En cours"}
           </Badge>
         </div>
       </CardHeader>
@@ -63,13 +68,51 @@ const ProjectCard: React.FC<ProjectCardProps> = ({
             </div>
           </div>
           
-          <Button 
-            variant="outline" 
-            className="w-full" 
-            onClick={() => onViewDetails(project)}
-          >
-            Voir les détails
-          </Button>
+          <div className="flex space-x-2">
+            <Button 
+              variant="outline" 
+              className="flex-1" 
+              onClick={() => onViewDetails(project)}
+            >
+              Voir les détails
+            </Button>
+            <Button 
+              variant="outline" 
+              onClick={() => onEditProject(project)}
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
+              </svg>
+            </Button>
+            <AlertDialog>
+              <AlertDialogTrigger asChild>
+                <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
+                  </svg>
+                </Button>
+              </AlertDialogTrigger>
+              <AlertDialogContent>
+                <AlertDialogHeader>
+                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                  <AlertDialogDescription>
+                    Cette action supprimera définitivement le projet "{project.title}".
+                    Cette action ne peut pas être annulée.
+                  </AlertDialogDescription>
+                </AlertDialogHeader>
+                <AlertDialogFooter>
+                  <AlertDialogCancel>Annuler</AlertDialogCancel>
+                  <AlertDialogAction 
+                    onClick={() => onDeleteProject(project.id)}
+                    className="bg-red-600 hover:bg-red-700"
+                  >
+                    Supprimer
+                  </AlertDialogAction>
+                </AlertDialogFooter>
+              </AlertDialogContent>
+            </AlertDialog>
+          </div>
         </div>
       </CardContent>
     </Card>
