@@ -1,3 +1,4 @@
+
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import { SettingsProvider } from '@/contexts/SettingsContext';
@@ -10,6 +11,9 @@ import Internships from '@/pages/Internships';
 import Evaluations from '@/pages/Evaluations';
 import Profile from '@/pages/Profile';
 import Settings from '@/pages/Settings';
+import Reports from '@/pages/Reports';
+import Statistics from '@/pages/Statistics';
+import Affectation from '@/pages/Affectation';
 import NotFound from '@/pages/NotFound';
 
 function App() {
@@ -27,6 +31,9 @@ function App() {
               <Route path="/evaluations" element={<Evaluations />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/settings" element={<Settings />} />
+              <Route path="/reports" element={<Reports />} />
+              <Route path="/statistics" element={<Statistics />} />
+              <Route path="/affectation" element={<Affectation />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
             <Toaster />

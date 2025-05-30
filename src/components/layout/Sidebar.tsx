@@ -3,6 +3,16 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { useSettings } from "@/contexts/SettingsContext";
+import { 
+  User, 
+  Users, 
+  BarChart3, 
+  FileText, 
+  FolderKanban, 
+  Settings, 
+  TrendingUp, 
+  UserCheck 
+} from "lucide-react";
 
 interface SidebarProps {
   sidebarOpen: boolean;
@@ -16,11 +26,14 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
   const { translations } = useSettings();
 
   const menuItems = [
-    { id: "profile", label: translations["Mon profil"], icon: "👤", path: "/profile" },
-    { id: "internships", label: translations["Gestion des stages"], icon: "👥", path: "/internships" },
-    { id: "evaluations", label: translations["Évaluations"], icon: "📊", path: "/evaluations" },
-    { id: "projects", label: translations["Projets"], icon: "📋", path: "/projects" },
-    { id: "settings", label: translations["Paramètres"], icon: "⚙️", path: "/settings" },
+    { id: "profile", label: "Mon profil", icon: User, path: "/profile" },
+    { id: "internships", label: "Gestion des Stagiaires", icon: Users, path: "/internships" },
+    { id: "evaluations", label: "Évaluations", icon: BarChart3, path: "/evaluations" },
+    { id: "projects", label: "Gestion des Projets", icon: FolderKanban, path: "/projects" },
+    { id: "affectation", label: "Affectation", icon: UserCheck, path: "/affectation" },
+    { id: "reports", label: "Rapports", icon: FileText, path: "/reports" },
+    { id: "statistics", label: "Statistiques", icon: TrendingUp, path: "/statistics" },
+    { id: "settings", label: "Paramètres", icon: Settings, path: "/settings" },
   ];
 
   return (
@@ -51,20 +64,23 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
       {/* Navigation */}
       <nav className="flex-1 p-4">
         <ul className="space-y-2">
-          {menuItems.map((item) => (
-            <li key={item.id}>
-              <Button
-                variant={currentPage === item.id ? "default" : "ghost"}
-                className={`w-full justify-start transition-all duration-300 hover-scale ${
-                  currentPage === item.id ? "bg-blue-800 text-white" : "hover:bg-blue-50"
-                }`}
-                onClick={() => navigate(item.path)}
-              >
-                <span className="text-lg">{item.icon}</span>
-                {sidebarOpen && <span className="ml-3 animate-fade-in">{item.label}</span>}
-              </Button>
-            </li>
-          ))}
+          {menuItems.map((item) => {
+            const IconComponent = item.icon;
+            return (
+              <li key={item.id}>
+                <Button
+                  variant={currentPage === item.id ? "default" : "ghost"}
+                  className={`w-full justify-start transition-all duration-300 hover-scale ${
+                    currentPage === item.id ? "bg-blue-800 text-white" : "hover:bg-blue-50"
+                  }`}
+                  onClick={() => navigate(item.path)}
+                >
+                  <IconComponent size={18} />
+                  {sidebarOpen && <span className="ml-3 animate-fade-in">{item.label}</span>}
+                </Button>
+              </li>
+            );
+          })}
         </ul>
       </nav>
 
@@ -76,7 +92,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
           className="w-full justify-start text-red-600 hover:bg-red-50 hover-scale transition-all duration-300"
         >
           <span className="text-lg">🚪</span>
-          {sidebarOpen && <span className="ml-3 animate-fade-in">{translations["Déconnexion"]}</span>}
+          {sidebarOpen && <span className="ml-3 animate-fade-in">Déconnexion</span>}
         </Button>
       </div>
     </div>
