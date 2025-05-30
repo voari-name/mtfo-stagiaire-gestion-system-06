@@ -9,6 +9,7 @@ import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
 import EditProjectDialog from "@/components/projects/EditProjectDialog";
 import { useProjects } from "@/hooks/useProjects";
 import { useDataContext } from "@/contexts/DataContext";
+import { useSettings } from "@/contexts/SettingsContext";
 
 const Projects = () => {
   const {
@@ -26,21 +27,22 @@ const Projects = () => {
   } = useProjects();
 
   const { projects, deleteProject, addProject } = useDataContext();
+  const { translations } = useSettings();
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
 
   return (
-    <MainLayout title="Gestion des projets" currentPage="projects">
+    <MainLayout title={translations["Gestion des projets"] || "Gestion des projets"} currentPage="projects">
       <div className="space-y-6">
         <div className="flex justify-between items-center">
-          <h2 className="text-2xl font-bold">Projets</h2>
+          <h2 className="text-2xl font-bold">{translations["Projets"] || "Projets"}</h2>
         </div>
 
         <Tabs defaultValue="all">
           <TabsList className="mb-6">
-            <TabsTrigger value="all">Tous</TabsTrigger>
-            <TabsTrigger value="debut">Début</TabsTrigger>
-            <TabsTrigger value="active">En cours</TabsTrigger>
-            <TabsTrigger value="completed">Terminés</TabsTrigger>
+            <TabsTrigger value="all">{translations["Tous"] || "Tous"}</TabsTrigger>
+            <TabsTrigger value="debut">{translations["Début"] || "Début"}</TabsTrigger>
+            <TabsTrigger value="active">{translations["En cours"] || "En cours"}</TabsTrigger>
+            <TabsTrigger value="completed">{translations["Terminés"] || "Terminés"}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="all" className="space-y-6">

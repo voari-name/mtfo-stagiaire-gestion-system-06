@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -11,13 +12,15 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search } from "lucide-react";
 import { useDataContext } from "@/contexts/DataContext";
+import { useSettings } from "@/contexts/SettingsContext";
 
 const Internships = () => {
   const { interns, addIntern, updateIntern, deleteIntern } = useDataContext();
+  const { translations } = useSettings();
   const [searchTerm, setSearchTerm] = useState("");
   const [formData, setFormData] = useState({
-    firstName: "",
     lastName: "",
+    firstName: "",
     title: "",
     email: "",
     startDate: "",
@@ -58,13 +61,19 @@ const Internships = () => {
   const handleAddIntern = () => {
     const newIntern = {
       id: Date.now(),
-      ...formData
+      firstName: formData.firstName,
+      lastName: formData.lastName,
+      title: formData.title,
+      email: formData.email,
+      startDate: formData.startDate,
+      endDate: formData.endDate,
+      status: formData.status
     };
     
     addIntern(newIntern);
     setFormData({
-      firstName: "",
       lastName: "",
+      firstName: "",
       title: "",
       email: "",
       startDate: "",
@@ -95,7 +104,7 @@ const Internships = () => {
                 {intern.firstName.charAt(0)}{intern.lastName.charAt(0)}
               </div>
               <div>
-                <h3 className="font-bold text-lg">{intern.firstName} {intern.lastName}</h3>
+                <h3 className="font-bold text-lg">{intern.lastName} {intern.firstName}</h3>
                 <p className="text-sm text-muted-foreground">{intern.email}</p>
               </div>
             </div>
@@ -151,7 +160,7 @@ const Internships = () => {
                 <AlertDialogHeader>
                   <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Cette action supprimera définitivement le stagiaire {intern.firstName} {intern.lastName}.
+                    Cette action supprimera définitivement le stagiaire {intern.lastName} {intern.firstName}.
                     Cette action ne peut pas être annulée.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
@@ -173,16 +182,16 @@ const Internships = () => {
   );
 
   return (
-    <MainLayout title="Gestion des stages" currentPage="internships">
+    <MainLayout title={translations["Gestion des stages"] || "Gestion des stages"} currentPage="internships">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <h2 className="text-2xl font-bold">Stagiaires</h2>
+          <h2 className="text-2xl font-bold">{translations["Stagiaires"] || "Stagiaires"}</h2>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             {/* Search Bar */}
             <div className="relative flex-1 sm:w-64">
               <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400 h-4 w-4" />
               <Input
-                placeholder="Rechercher un stagiaire..."
+                placeholder={translations["Rechercher un stagiaire..."] || "Rechercher un stagiaire..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-10"
@@ -196,27 +205,18 @@ const Internships = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                     <path d="M5 12h14" /><path d="M12 5v14" />
                   </svg>
-                  Ajouter un stagiaire
+                  {translations["Ajouter un stagiaire"] || "Ajouter un stagiaire"}
                 </Button>
               </DialogTrigger>
               <DialogContent className="sm:max-w-[525px]">
                 <DialogHeader>
-                  <DialogTitle>Ajouter un nouveau stagiaire</DialogTitle>
+                  <DialogTitle>{translations["Ajouter un nouveau stagiaire"] || "Ajouter un nouveau stagiaire"}</DialogTitle>
                 </DialogHeader>
                 
                 <div className="grid gap-4 py-4">
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">Prénom</Label>
-                      <Input 
-                        id="firstName" 
-                        name="firstName" 
-                        value={formData.firstName} 
-                        onChange={handleInputChange} 
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">Nom</Label>
+                      <Label htmlFor="lastName">{translations["Nom"] || "Nom"}</Label>
                       <Input 
                         id="lastName" 
                         name="lastName" 
@@ -224,9 +224,18 @@ const Internships = () => {
                         onChange={handleInputChange} 
                       />
                     </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="firstName">{translations["Prénom"] || "Prénom"}</Label>
+                      <Input 
+                        id="firstName" 
+                        name="firstName" 
+                        value={formData.firstName} 
+                        onChange={handleInputChange} 
+                      />
+                    </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="title">Intitulé du stage</Label>
+                    <Label htmlFor="title">{translations["Intitulé du stage"] || "Intitulé du stage"}</Label>
                     <Input 
                       id="title" 
                       name="title" 
@@ -246,7 +255,7 @@ const Internships = () => {
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
-                      <Label htmlFor="startDate">Date de début</Label>
+                      <Label htmlFor="startDate">{translations["Date de début"] || "Date de début"}</Label>
                       <Input 
                         id="startDate" 
                         name="startDate" 
@@ -256,7 +265,7 @@ const Internships = () => {
                       />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="endDate">Date de fin</Label>
+                      <Label htmlFor="endDate">{translations["Date de fin"] || "Date de fin"}</Label>
                       <Input 
                         id="endDate" 
                         name="endDate" 
@@ -267,25 +276,25 @@ const Internships = () => {
                     </div>
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="status">Statut</Label>
+                    <Label htmlFor="status">{translations["Statut"] || "Statut"}</Label>
                     <Select 
                       value={formData.status} 
                       onValueChange={(value) => handleSelectChange("status", value)}
                     >
                       <SelectTrigger id="status">
-                        <SelectValue placeholder="Sélectionnez un statut" />
+                        <SelectValue placeholder={translations["Sélectionnez un statut"] || "Sélectionnez un statut"} />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="début">Début</SelectItem>
-                        <SelectItem value="en cours">En cours</SelectItem>
-                        <SelectItem value="fin">Fin</SelectItem>
+                        <SelectItem value="début">{translations["Début"] || "Début"}</SelectItem>
+                        <SelectItem value="en cours">{translations["En cours"] || "En cours"}</SelectItem>
+                        <SelectItem value="fin">{translations["Fin"] || "Fin"}</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
                 <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>Annuler</Button>
-                  <Button onClick={handleAddIntern}>Enregistrer</Button>
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{translations["Annuler"] || "Annuler"}</Button>
+                  <Button onClick={handleAddIntern}>{translations["Enregistrer"] || "Enregistrer"}</Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -296,23 +305,14 @@ const Internships = () => {
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent className="sm:max-w-[525px]">
             <DialogHeader>
-              <DialogTitle>Modifier le stagiaire</DialogTitle>
+              <DialogTitle>{translations["Modifier le stagiaire"] || "Modifier le stagiaire"}</DialogTitle>
             </DialogHeader>
             {editingIntern && (
               <div className="grid gap-4 py-4">
                 
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="editFirstName">Prénom</Label>
-                    <Input 
-                      id="editFirstName" 
-                      name="firstName" 
-                      value={editingIntern.firstName} 
-                      onChange={handleEditInputChange} 
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="editLastName">Nom</Label>
+                    <Label htmlFor="editLastName">{translations["Nom"] || "Nom"}</Label>
                     <Input 
                       id="editLastName" 
                       name="lastName" 
@@ -320,9 +320,18 @@ const Internships = () => {
                       onChange={handleEditInputChange} 
                     />
                   </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="editFirstName">{translations["Prénom"] || "Prénom"}</Label>
+                    <Input 
+                      id="editFirstName" 
+                      name="firstName" 
+                      value={editingIntern.firstName} 
+                      onChange={handleEditInputChange} 
+                    />
+                  </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="editTitle">Intitulé du stage</Label>
+                  <Label htmlFor="editTitle">{translations["Intitulé du stage"] || "Intitulé du stage"}</Label>
                   <Input 
                     id="editTitle" 
                     name="title" 
@@ -342,7 +351,7 @@ const Internships = () => {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="editStartDate">Date de début</Label>
+                    <Label htmlFor="editStartDate">{translations["Date de début"] || "Date de début"}</Label>
                     <Input 
                       id="editStartDate" 
                       name="startDate" 
@@ -352,7 +361,7 @@ const Internships = () => {
                     />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="editEndDate">Date de fin</Label>
+                    <Label htmlFor="editEndDate">{translations["Date de fin"] || "Date de fin"}</Label>
                     <Input 
                       id="editEndDate" 
                       name="endDate" 
@@ -363,36 +372,36 @@ const Internships = () => {
                   </div>
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="editStatus">Statut</Label>
+                  <Label htmlFor="editStatus">{translations["Statut"] || "Statut"}</Label>
                   <Select 
                     value={editingIntern.status} 
                     onValueChange={(value) => handleEditSelectChange("status", value)}
                   >
                     <SelectTrigger id="editStatus">
-                      <SelectValue placeholder="Sélectionnez un statut" />
+                      <SelectValue placeholder={translations["Sélectionnez un statut"] || "Sélectionnez un statut"} />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="début">Début</SelectItem>
-                      <SelectItem value="en cours">En cours</SelectItem>
-                      <SelectItem value="fin">Fin</SelectItem>
+                      <SelectItem value="début">{translations["Début"] || "Début"}</SelectItem>
+                      <SelectItem value="en cours">{translations["En cours"] || "En cours"}</SelectItem>
+                      <SelectItem value="fin">{translations["Fin"] || "Fin"}</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
             )}
             <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>Annuler</Button>
-              <Button onClick={handleSaveEdit}>Enregistrer</Button>
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>{translations["Annuler"] || "Annuler"}</Button>
+              <Button onClick={handleSaveEdit}>{translations["Enregistrer"] || "Enregistrer"}</Button>
             </div>
           </DialogContent>
         </Dialog>
 
         <Tabs defaultValue="all">
           <TabsList className="mb-6">
-            <TabsTrigger value="all">Tous</TabsTrigger>
-            <TabsTrigger value="debut">Début</TabsTrigger>
-            <TabsTrigger value="ongoing">En cours</TabsTrigger>
-            <TabsTrigger value="completed">Terminés</TabsTrigger>
+            <TabsTrigger value="all">{translations["Tous"] || "Tous"}</TabsTrigger>
+            <TabsTrigger value="debut">{translations["Début"] || "Début"}</TabsTrigger>
+            <TabsTrigger value="ongoing">{translations["En cours"] || "En cours"}</TabsTrigger>
+            <TabsTrigger value="completed">{translations["Terminés"] || "Terminés"}</TabsTrigger>
           </TabsList>
           
           <TabsContent value="all" className="space-y-6">
@@ -401,7 +410,7 @@ const Internships = () => {
             ) : (
               <div className="text-center py-10">
                 <p className="text-muted-foreground">
-                  {searchTerm ? "Aucun stagiaire trouvé pour cette recherche" : "Aucun stagiaire pour le moment"}
+                  {searchTerm ? translations["Aucun stagiaire trouvé pour cette recherche"] || "Aucun stagiaire trouvé pour cette recherche" : translations["Aucun stagiaire pour le moment"] || "Aucun stagiaire pour le moment"}
                 </p>
               </div>
             )}
@@ -412,7 +421,7 @@ const Internships = () => {
               filteredInterns.filter(intern => intern.status === 'début').map(renderInternCard)
             ) : (
               <div className="text-center py-10">
-                <p className="text-muted-foreground">Aucun stage au début pour le moment</p>
+                <p className="text-muted-foreground">{translations["Aucun stage au début pour le moment"] || "Aucun stage au début pour le moment"}</p>
               </div>
             )}
           </TabsContent>
@@ -422,7 +431,7 @@ const Internships = () => {
               filteredInterns.filter(intern => intern.status === 'en cours').map(renderInternCard)
             ) : (
               <div className="text-center py-10">
-                <p className="text-muted-foreground">Aucun stage en cours pour le moment</p>
+                <p className="text-muted-foreground">{translations["Aucun stage en cours pour le moment"] || "Aucun stage en cours pour le moment"}</p>
               </div>
             )}
           </TabsContent>
@@ -432,7 +441,7 @@ const Internships = () => {
               filteredInterns.filter(intern => intern.status === 'fin').map(renderInternCard)
             ) : (
               <div className="text-center py-10">
-                <p className="text-muted-foreground">Aucun stage terminé pour le moment</p>
+                <p className="text-muted-foreground">{translations["Aucun stage terminé pour le moment"] || "Aucun stage terminé pour le moment"}</p>
               </div>
             )}
           </TabsContent>
