@@ -1,9 +1,9 @@
 
-import { useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { EvaluationType } from "@/types/evaluations";
+import { FileText, Edit3, Trash2, ArrowLeft } from "lucide-react";
 
 interface EvaluationCardProps {
   evaluation: EvaluationType;
@@ -15,76 +15,79 @@ interface EvaluationCardProps {
 }
 
 const EvaluationCard = ({ evaluation, onEdit, onDelete, onGeneratePdf, onCancel, showCancelButton = false }: EvaluationCardProps) => {
+  const getGradeLabel = (grade: number) => {
+    if (grade >= 16) return { label: 'Excellent', color: 'bg-green-100 text-green-800' };
+    if (grade >= 14) return { label: 'Très bien', color: 'bg-blue-100 text-blue-800' };
+    if (grade >= 12) return { label: 'Bien', color: 'bg-yellow-100 text-yellow-800' };
+    if (grade >= 10) return { label: 'Passable', color: 'bg-orange-100 text-orange-800' };
+    return { label: 'Insuffisant', color: 'bg-red-100 text-red-800' };
+  };
+
+  const gradeInfo = getGradeLabel(evaluation.grade);
+
   return (
-    <Card key={evaluation.id} className="overflow-hidden hover:shadow-md transition-shadow">
+    <Card className="overflow-hidden hover:shadow-lg transition-all duration-300 border-l-4 border-l-blue-500">
       <CardContent className="p-0">
-        <div className="flex flex-col md:flex-row">
+        <div className="flex flex-col lg:flex-row">
           <div className="p-6 flex-1">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="h-12 w-12 rounded-full bg-blue-800 flex items-center justify-center text-white text-lg font-bold">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="h-14 w-14 rounded-full bg-gradient-to-br from-blue-600 to-blue-800 flex items-center justify-center text-white text-lg font-bold shadow-lg">
                 {evaluation.firstName.charAt(0)}{evaluation.lastName.charAt(0)}
               </div>
               <div>
-                <h3 className="font-bold text-lg">{evaluation.firstName} {evaluation.lastName}</h3>
-                <p className="text-sm text-muted-foreground">
+                <h3 className="font-bold text-xl text-gray-800">{evaluation.firstName} {evaluation.lastName}</h3>
+                <p className="text-sm text-gray-500 mt-1">
                   Du {new Date(evaluation.startDate).toLocaleDateString('fr-FR')} au {new Date(evaluation.endDate).toLocaleDateString('fr-FR')}
                 </p>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Note</p>
-                <div className="flex items-center">
-                  <span className="text-2xl font-bold">{evaluation.grade}/20</span>
-                  <span className="ml-2 px-2 py-1 rounded bg-gray-100 text-xs">
-                    {evaluation.grade >= 16 ? 'Excellent' : 
-                     evaluation.grade >= 14 ? 'Très bien' : 
-                     evaluation.grade >= 12 ? 'Bien' : 
-                     evaluation.grade >= 10 ? 'Passable' : 'Insuffisant'}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-600">Note d'évaluation</p>
+                <div className="flex items-center space-x-3">
+                  <span className="text-3xl font-bold text-gray-800">{evaluation.grade}/20</span>
+                  <span className={`px-3 py-1 rounded-full text-sm font-medium ${gradeInfo.color}`}>
+                    {gradeInfo.label}
                   </span>
                 </div>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Commentaire</p>
-                <p className="font-medium">{evaluation.comment}</p>
+              <div className="space-y-2">
+                <p className="text-sm font-medium text-gray-600">Commentaire</p>
+                <p className="text-gray-800 bg-gray-50 p-3 rounded-lg">{evaluation.comment || "Aucun commentaire"}</p>
               </div>
             </div>
           </div>
           
-          <div className="bg-gray-50 p-6 flex flex-col justify-center space-y-3 md:w-48">
-            <Button onClick={() => onGeneratePdf(evaluation.id)}>
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                <path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z" />
-                <polyline points="14 2 14 8 20 8" />
-              </svg>
-              Télécharger par PDF
+          <div className="bg-gradient-to-b from-gray-50 to-gray-100 p-6 flex flex-col justify-center space-y-3 lg:w-56">
+            <Button 
+              onClick={() => onGeneratePdf(evaluation.id)}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg transition-all duration-200"
+            >
+              <FileText className="mr-2 h-4 w-4" />
+              Télécharger PDF
             </Button>
             <Button 
               variant="outline" 
               onClick={() => onEdit(evaluation)}
+              className="w-full border-gray-300 hover:bg-gray-50 transition-all duration-200"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
-              </svg>
+              <Edit3 className="mr-2 h-4 w-4" />
               Modifier
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700">
-                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                    <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
-                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
-                  </svg>
+                <Button variant="outline" className="w-full border-red-300 text-red-600 hover:bg-red-50 hover:text-red-700 transition-all duration-200">
+                  <Trash2 className="mr-2 h-4 w-4" />
                   Supprimer
                 </Button>
               </AlertDialogTrigger>
               <AlertDialogContent>
                 <AlertDialogHeader>
-                  <AlertDialogTitle>Êtes-vous sûr ?</AlertDialogTitle>
+                  <AlertDialogTitle>Confirmer la suppression</AlertDialogTitle>
                   <AlertDialogDescription>
-                    Cette action supprimera définitivement l'évaluation de {evaluation.firstName} {evaluation.lastName}.
-                    Cette action ne peut pas être annulée.
+                    Êtes-vous sûr de vouloir supprimer l'évaluation de {evaluation.firstName} {evaluation.lastName} ?
+                    Cette action est irréversible.
                   </AlertDialogDescription>
                 </AlertDialogHeader>
                 <AlertDialogFooter>
@@ -93,7 +96,7 @@ const EvaluationCard = ({ evaluation, onEdit, onDelete, onGeneratePdf, onCancel,
                     onClick={() => onDelete(evaluation.id)}
                     className="bg-red-600 hover:bg-red-700"
                   >
-                    Supprimer
+                    Supprimer définitivement
                   </AlertDialogAction>
                 </AlertDialogFooter>
               </AlertDialogContent>
@@ -102,13 +105,10 @@ const EvaluationCard = ({ evaluation, onEdit, onDelete, onGeneratePdf, onCancel,
               <Button 
                 variant="outline" 
                 onClick={onCancel}
-                className="border-gray-300"
+                className="w-full border-gray-300 hover:bg-gray-50 transition-all duration-200"
               >
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
-                  <path d="M9 12l2 2 4-4" />
-                  <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c2.39 0 4.68.94 6.36 2.64" />
-                </svg>
-                Annuler
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Retour à la liste
               </Button>
             )}
           </div>
