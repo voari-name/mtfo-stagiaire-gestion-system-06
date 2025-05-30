@@ -27,6 +27,7 @@ const Evaluations = () => {
 
   const { getCompletedInterns } = useDataContext();
   const completedInterns = getCompletedInterns();
+  const [selectedEvaluation, setSelectedEvaluation] = useState<EvaluationType | null>(null);
 
   const handleCreateEvaluationFromIntern = (intern: any) => {
     const newEvaluation: EvaluationType = {
@@ -40,6 +41,40 @@ const Evaluations = () => {
     };
     addEvaluation(newEvaluation);
   };
+
+  const handleOpenEvaluation = (evaluation: EvaluationType) => {
+    setSelectedEvaluation(evaluation);
+  };
+
+  const handleBackToList = () => {
+    setSelectedEvaluation(null);
+  };
+
+  // Si une évaluation est sélectionnée, afficher ses détails
+  if (selectedEvaluation) {
+    return (
+      <MainLayout title="Détails de l'évaluation" currentPage="evaluations" username="RAHAJANIAINA Olivier">
+        <div className="space-y-6 animate-fade-in">
+          <EvaluationCard
+            evaluation={selectedEvaluation}
+            onEdit={handleEditEvaluation}
+            onDelete={handleDeleteEvaluation}
+            onGeneratePdf={handleGeneratePdf}
+            onCancel={handleBackToList}
+            showCancelButton={true}
+          />
+        </div>
+
+        <EditEvaluationDialog
+          open={isEditDialogOpen}
+          onOpenChange={setIsEditDialogOpen}
+          evaluation={currentEvaluation}
+          onSave={handleSaveEvaluation}
+          onInputChange={handleInputChange}
+        />
+      </MainLayout>
+    );
+  }
 
   return (
     <MainLayout title="Évaluations des stagiaires" currentPage="evaluations" username="RAHAJANIAINA Olivier">
@@ -92,14 +127,54 @@ const Evaluations = () => {
           <h3 className="text-lg font-semibold text-gray-700">Évaluations complétées</h3>
           <div className="grid grid-cols-1 gap-6">
             {evaluations.map((evaluation, index) => (
-              <div key={evaluation.id} className="animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
-                <EvaluationCard
-                  evaluation={evaluation}
-                  onEdit={handleEditEvaluation}
-                  onDelete={handleDeleteEvaluation}
-                  onGeneratePdf={handleGeneratePdf}
-                />
-              </div>
+              <Card key={evaluation.id} className="overflow-hidden hover:shadow-md transition-shadow animate-fade-in" style={{animationDelay: `${index * 0.1}s`}}>
+                <CardContent className="p-0">
+                  <div className="flex flex-col md:flex-row">
+                    <div className="p-6 flex-1">
+                      <div className="flex items-center space-x-4 mb-4">
+                        <div className="h-12 w-12 rounded-full bg-blue-800 flex items-center justify-center text-white text-lg font-bold">
+                          {evaluation.firstName.charAt(0)}{evaluation.lastName.charAt(0)}
+                        </div>
+                        <div>
+                          <h3 className="font-bold text-lg">{evaluation.firstName} {evaluation.lastName}</h3>
+                          <p className="text-sm text-muted-foreground">
+                            Du {new Date(evaluation.startDate).toLocaleDateString('fr-FR')} au {new Date(evaluation.endDate).toLocaleDateString('fr-FR')}
+                          </p>
+                        </div>
+                      </div>
+                      
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                          <p className="text-sm text-muted-foreground">Note</p>
+                          <div className="flex items-center">
+                            <span className="text-2xl font-bold">{evaluation.grade}/20</span>
+                            <span className="ml-2 px-2 py-1 rounded bg-gray-100 text-xs">
+                              {evaluation.grade >= 16 ? 'Excellent' : 
+                               evaluation.grade >= 14 ? 'Très bien' : 
+                               evaluation.grade >= 12 ? 'Bien' : 
+                               evaluation.grade >= 10 ? 'Passable' : 'Insuffisant'}
+                            </span>
+                          </div>
+                        </div>
+                        <div>
+                          <p className="text-sm text-muted-foreground">Commentaire</p>
+                          <p className="font-medium">{evaluation.comment}</p>
+                        </div>
+                      </div>
+                    </div>
+                    
+                    <div className="bg-gray-50 p-6 flex flex-col justify-center space-y-3 md:w-48">
+                      <Button onClick={() => handleOpenEvaluation(evaluation)}>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                          <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z" />
+                          <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z" />
+                        </svg>
+                        Ouvrir
+                      </Button>
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
             ))}
           </div>
           

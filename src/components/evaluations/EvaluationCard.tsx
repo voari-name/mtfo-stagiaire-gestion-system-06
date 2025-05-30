@@ -10,9 +10,11 @@ interface EvaluationCardProps {
   onEdit: (evaluation: EvaluationType) => void;
   onDelete: (id: number) => void;
   onGeneratePdf: (id: number) => void;
+  onCancel?: () => void;
+  showCancelButton?: boolean;
 }
 
-const EvaluationCard = ({ evaluation, onEdit, onDelete, onGeneratePdf }: EvaluationCardProps) => {
+const EvaluationCard = ({ evaluation, onEdit, onDelete, onGeneratePdf, onCancel, showCancelButton = false }: EvaluationCardProps) => {
   return (
     <Card key={evaluation.id} className="overflow-hidden hover:shadow-md transition-shadow">
       <CardContent className="p-0">
@@ -96,6 +98,19 @@ const EvaluationCard = ({ evaluation, onEdit, onDelete, onGeneratePdf }: Evaluat
                 </AlertDialogFooter>
               </AlertDialogContent>
             </AlertDialog>
+            {showCancelButton && onCancel && (
+              <Button 
+                variant="outline" 
+                onClick={onCancel}
+                className="border-gray-300"
+              >
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
+                  <path d="M9 12l2 2 4-4" />
+                  <path d="M21 12c0 4.97-4.03 9-9 9s-9-4.03-9-9 4.03-9 9-9c2.39 0 4.68.94 6.36 2.64" />
+                </svg>
+                Annuler
+              </Button>
+            )}
           </div>
         </div>
       </CardContent>
