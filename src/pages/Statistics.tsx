@@ -32,7 +32,7 @@ const Statistics = () => {
     {
       title: "Moyenne Générale",
       value: evaluations.length > 0 ? 
-        Math.round(evaluations.reduce((sum, eval) => sum + eval.grade, 0) / evaluations.length * 10) / 10 
+        Math.round(evaluations.reduce((sum, evaluation) => sum + evaluation.grade, 0) / evaluations.length * 10) / 10 
         : 0,
       description: "Note moyenne des évaluations",
       icon: TrendingUp,
