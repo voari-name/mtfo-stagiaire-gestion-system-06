@@ -26,14 +26,14 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
   const { translations } = useSettings();
 
   const menuItems = [
-    { id: "profile", label: "Mon profil", icon: User, path: "/profile" },
-    { id: "internships", label: "Gestion des Stagiaires", icon: Users, path: "/internships" },
-    { id: "evaluations", label: "Évaluations", icon: BarChart3, path: "/evaluations" },
-    { id: "projects", label: "Gestion des Projets", icon: FolderKanban, path: "/projects" },
-    { id: "affectation", label: "Affectation", icon: UserCheck, path: "/affectation" },
-    { id: "reports", label: "Rapports", icon: FileText, path: "/reports" },
-    { id: "statistics", label: "Statistiques", icon: TrendingUp, path: "/statistics" },
-    { id: "settings", label: "Paramètres", icon: Settings, path: "/settings" },
+    { id: "profile", label: translations["Mon profil"] || "Mon profil", icon: User, path: "/profile" },
+    { id: "internships", label: translations["Gestion des Stagiaires"] || "Gestion des Stagiaires", icon: Users, path: "/internships" },
+    { id: "evaluations", label: translations["Évaluations"] || "Évaluations", icon: BarChart3, path: "/evaluations" },
+    { id: "projects", label: translations["Gestion des Projets"] || "Gestion des Projets", icon: FolderKanban, path: "/projects" },
+    { id: "affectation", label: translations["Affectation"] || "Affectation", icon: UserCheck, path: "/affectation" },
+    { id: "reports", label: translations["Rapports"] || "Rapports", icon: FileText, path: "/reports" },
+    { id: "statistics", label: translations["Statistiques"] || "Statistiques", icon: TrendingUp, path: "/statistics" },
+    { id: "settings", label: translations["Paramètres"] || "Paramètres", icon: Settings, path: "/settings" },
   ];
 
   return (
@@ -92,7 +92,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
           className="w-full justify-start text-red-600 hover:bg-red-50 hover-scale transition-all duration-300"
         >
           <span className="text-lg">🚪</span>
-          {sidebarOpen && <span className="ml-3 animate-fade-in">Déconnexion</span>}
+          {sidebarOpen && <span className="ml-3 animate-fade-in">{translations["Déconnexion"] || "Déconnexion"}</span>}
         </Button>
       </div>
     </div>

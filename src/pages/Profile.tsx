@@ -32,12 +32,12 @@ const Profile = () => {
   ];
 
   return (
-    <MainLayout title={translations["Mon profil"]} currentPage="profile" username="RAHAJANIAINA Olivier">
+    <MainLayout title={translations["Mon profil"] || "Mon profil"} currentPage="profile" username="RAHAJANIAINA Olivier">
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 animate-fade-in">
         <div className="md:col-span-1">
           <Card className="hover:shadow-lg transition-all duration-300 animate-scale-in">
             <CardHeader className="pb-2">
-              <CardTitle className="text-blue-800 dark:text-blue-400">{translations["Photo de profil"]}</CardTitle>
+              <CardTitle className="text-blue-800 dark:text-blue-400">{translations["Photo de profil"] || "Photo de profil"}</CardTitle>
               <CardDescription>Cette photo sera visible par les autres utilisateurs</CardDescription>
             </CardHeader>
             <CardContent>
@@ -56,7 +56,7 @@ const Profile = () => {
         <div className="md:col-span-2 space-y-6">
           <Card className="hover:shadow-lg transition-all duration-300 animate-fade-in" style={{animationDelay: '0.2s'}}>
             <CardHeader>
-              <CardTitle className="text-blue-800 dark:text-blue-400">{translations["Informations personnelles"]}</CardTitle>
+              <CardTitle className="text-blue-800 dark:text-blue-400">{translations["Informations personnelles"] || "Informations personnelles"}</CardTitle>
               <CardDescription>Gérez vos informations personnelles</CardDescription>
             </CardHeader>
             <CardContent>
@@ -66,13 +66,13 @@ const Profile = () => {
 
           <Card className="hover:shadow-lg transition-all duration-300 animate-fade-in" style={{animationDelay: '0.4s'}}>
             <CardHeader>
-              <CardTitle className="text-blue-800 dark:text-blue-400">{translations["Préférences d'affichage"]}</CardTitle>
+              <CardTitle className="text-blue-800 dark:text-blue-400">{translations["Préférences d'affichage"] || "Préférences d'affichage"}</CardTitle>
               <CardDescription>Gérez l'apparence de l'application</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="darkMode">{translations["Mode sombre"]}</Label>
+                  <Label htmlFor="darkMode">{translations["Mode sombre"] || "Mode sombre"}</Label>
                   <Switch 
                     id="darkMode" 
                     checked={darkMode}
@@ -80,7 +80,7 @@ const Profile = () => {
                   />
                 </div>
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="standbyMode">{translations["Mode veille"]}</Label>
+                  <Label htmlFor="standbyMode">{translations["Mode veille"] || "Mode veille"}</Label>
                   <Switch 
                     id="standbyMode" 
                     checked={standbyMode}
@@ -92,7 +92,7 @@ const Profile = () => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
-                    <Label htmlFor="brightness">{translations["Luminosité"]}</Label>
+                    <Label htmlFor="brightness">{translations["Luminosité"] || "Luminosité"}</Label>
                     <span className="text-sm text-muted-foreground">{brightness[0]}%</span>
                   </div>
                   <Slider
@@ -107,7 +107,7 @@ const Profile = () => {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="language">{translations["Langue de l'application"]}</Label>
+                  <Label htmlFor="language">{translations["Langue de l'application"] || "Langue de l'application"}</Label>
                   <Select 
                     value={language} 
                     onValueChange={setLanguage}
