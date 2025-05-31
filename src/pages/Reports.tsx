@@ -7,9 +7,11 @@ import { useToast } from "@/hooks/use-toast";
 import { useDataContext } from "@/contexts/DataContext";
 import { useSettings } from "@/contexts/SettingsContext";
 import { generatePDFReport, generateCSVReport } from "@/utils/reportGenerator";
+import { useNavigate } from "react-router-dom";
 
 const Reports = () => {
   const { toast } = useToast();
+  const navigate = useNavigate();
   const { interns, projects, evaluations } = useDataContext();
   const { translations } = useSettings();
 
@@ -132,7 +134,11 @@ const Reports = () => {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <Button className="w-full" variant="outline">
+            <Button 
+              className="w-full" 
+              variant="outline"
+              onClick={() => navigate('/custom-report')}
+            >
               <FileText size={16} className="mr-2" />
               {translations["Créer un rapport personnalisé"] || "Créer un rapport personnalisé"}
             </Button>

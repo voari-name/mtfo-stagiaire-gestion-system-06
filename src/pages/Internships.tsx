@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -10,7 +9,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search, User, Calendar, Mail, BookOpen, Star } from "lucide-react";
+import { Search, User, Calendar, Mail, BookOpen, Star, UserCircle } from "lucide-react";
 import { useDataContext } from "@/contexts/DataContext";
 import { useSettings } from "@/contexts/SettingsContext";
 
@@ -25,7 +24,8 @@ const Internships = () => {
     email: "",
     startDate: "",
     endDate: "",
-    status: "début" as "début" | "en cours" | "fin"
+    status: "début" as "début" | "en cours" | "fin",
+    gender: "Masculin" as "Masculin" | "Féminin"
   });
   const [editingIntern, setEditingIntern] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -67,7 +67,8 @@ const Internships = () => {
       email: formData.email,
       startDate: formData.startDate,
       endDate: formData.endDate,
-      status: formData.status
+      status: formData.status,
+      gender: formData.gender
     };
     
     addIntern(newIntern);
@@ -78,7 +79,8 @@ const Internships = () => {
       email: "",
       startDate: "",
       endDate: "",
-      status: "début"
+      status: "début",
+      gender: "Masculin"
     });
     
     setIsDialogOpen(false);
@@ -109,6 +111,12 @@ const Internships = () => {
                   <Mail className="w-4 h-4 mr-2" />
                   {intern.email}
                 </p>
+                {intern.gender && (
+                  <p className="text-sm text-gray-600 flex items-center mt-1">
+                    <UserCircle className="w-4 h-4 mr-2" />
+                    {intern.gender}
+                  </p>
+                )}
               </div>
             </div>
             
@@ -257,6 +265,24 @@ const Internships = () => {
                     </div>
                   </div>
                   <div className="space-y-3">
+                    <Label htmlFor="gender" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <UserCircle className="w-4 h-4 mr-2" />
+                      Sexe
+                    </Label>
+                    <Select 
+                      value={formData.gender} 
+                      onValueChange={(value) => handleSelectChange("gender", value)}
+                    >
+                      <SelectTrigger id="gender" className="border-2 focus:border-blue-500 transition-colors bg-white">
+                        <SelectValue placeholder="Sélectionnez le sexe" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="Masculin">Masculin</SelectItem>
+                        <SelectItem value="Féminin">Féminin</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <div className="space-y-3">
                     <Label htmlFor="title" className="text-sm font-semibold text-gray-700 flex items-center">
                       <BookOpen className="w-4 h-4 mr-2" />
                       {translations["Intitulé du stage"] || "Intitulé du stage"}
@@ -383,6 +409,24 @@ const Internships = () => {
                       className="border-2 focus:border-blue-500 transition-colors bg-white"
                     />
                   </div>
+                </div>
+                <div className="space-y-3">
+                  <Label htmlFor="editGender" className="text-sm font-semibold text-gray-700 flex items-center">
+                    <UserCircle className="w-4 h-4 mr-2" />
+                    Sexe
+                  </Label>
+                  <Select 
+                    value={editingIntern.gender || "Masculin"} 
+                    onValueChange={(value) => handleEditSelectChange("gender", value)}
+                  >
+                    <SelectTrigger id="editGender" className="border-2 focus:border-blue-500 transition-colors bg-white">
+                      <SelectValue placeholder="Sélectionnez le sexe" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Masculin">Masculin</SelectItem>
+                      <SelectItem value="Féminin">Féminin</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 <div className="space-y-3">
                   <Label htmlFor="editTitle" className="text-sm font-semibold text-gray-700 flex items-center">
