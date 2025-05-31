@@ -1,4 +1,3 @@
-
 import MainLayout from "@/components/MainLayout";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -125,25 +124,6 @@ const Reports = () => {
             );
           })}
         </div>
-
-        <Card className="animate-fade-in" style={{animationDelay: '0.4s'}}>
-          <CardHeader>
-            <CardTitle>{translations["Rapports Personnalisés"] || "Rapports Personnalisés"}</CardTitle>
-            <CardDescription>
-              {translations["Générez des rapports personnalisés selon vos critères"] || "Générez des rapports personnalisés selon vos critères"}
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Button 
-              className="w-full" 
-              variant="outline"
-              onClick={() => navigate('/custom-report')}
-            >
-              <FileText size={16} className="mr-2" />
-              {translations["Créer un rapport personnalisé"] || "Créer un rapport personnalisé"}
-            </Button>
-          </CardContent>
-        </Card>
       </div>
     </MainLayout>
   );

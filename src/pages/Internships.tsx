@@ -12,6 +12,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, User, Calendar, Mail, BookOpen, Star, UserCircle } from "lucide-react";
 import { useDataContext } from "@/contexts/DataContext";
 import { useSettings } from "@/contexts/SettingsContext";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import PhotoUpload from "@/components/PhotoUpload";
 
 const Internships = () => {
   const { interns, addIntern, updateIntern, deleteIntern } = useDataContext();
@@ -25,7 +27,8 @@ const Internships = () => {
     startDate: "",
     endDate: "",
     status: "début" as "début" | "en cours" | "fin",
-    gender: "Masculin" as "Masculin" | "Féminin"
+    gender: "Masculin" as "Masculin" | "Féminin",
+    photo: ""
   });
   const [editingIntern, setEditingIntern] = useState(null);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -58,6 +61,14 @@ const Internships = () => {
     setEditingIntern({ ...editingIntern, [name]: value });
   };
 
+  const handlePhotoChange = (photoUrl: string) => {
+    setFormData({ ...formData, photo: photoUrl });
+  };
+
+  const handleEditPhotoChange = (photoUrl: string) => {
+    setEditingIntern({ ...editingIntern, photo: photoUrl });
+  };
+
   const handleAddIntern = () => {
     const newIntern = {
       id: Date.now(),
@@ -68,7 +79,8 @@ const Internships = () => {
       startDate: formData.startDate,
       endDate: formData.endDate,
       status: formData.status,
-      gender: formData.gender
+      gender: formData.gender,
+      photo: formData.photo
     };
     
     addIntern(newIntern);
@@ -80,7 +92,8 @@ const Internships = () => {
       startDate: "",
       endDate: "",
       status: "début",
-      gender: "Masculin"
+      gender: "Masculin",
+      photo: ""
     });
     
     setIsDialogOpen(false);
@@ -97,14 +110,20 @@ const Internships = () => {
   };
 
   const renderInternCard = (intern) => (
-    <Card key={intern.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500">
+    <Card key={intern.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500 animate-fade-in">
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row">
           <div className="p-6 flex-1 bg-gradient-to-r from-blue-50 to-indigo-50">
             <div className="flex items-center space-x-4 mb-6">
-              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
-                {intern.firstName.charAt(0)}{intern.lastName.charAt(0)}
-              </div>
+              <Avatar className="h-16 w-16 border-2 border-white shadow-lg">
+                {intern.photo ? (
+                  <AvatarImage src={intern.photo} alt={`${intern.firstName} ${intern.lastName}`} />
+                ) : (
+                  <AvatarFallback className="bg-gradient-to-br from-blue-600 to-indigo-600 text-white text-xl font-bold">
+                    {intern.firstName.charAt(0)}{intern.lastName.charAt(0)}
+                  </AvatarFallback>
+                )}
+              </Avatar>
               <div>
                 <h3 className="font-bold text-xl text-gray-800">{intern.lastName} {intern.firstName}</h3>
                 <p className="text-sm text-gray-600 flex items-center mt-1">
@@ -225,17 +244,24 @@ const Internships = () => {
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                     <path d="M5 12h14" /><path d="M12 5v14" />
                   </svg>
-                  {translations["Ajouter un stagiaire"] || "Ajouter un stagiaire"}
+                  Ouvrir formulaire
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[600px] bg-gradient-to-br from-blue-50 to-indigo-50">
+              <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-blue-50 to-indigo-50 animate-scale-in">
                 <DialogHeader>
                   <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                     {translations["Ajouter un nouveau stagiaire"] || "Ajouter un nouveau stagiaire"}
                   </DialogTitle>
                 </DialogHeader>
                 
-                <div className="grid gap-6 py-6">
+                <div className="grid gap-6 py-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
+                  <PhotoUpload 
+                    value={formData.photo}
+                    onChange={handlePhotoChange}
+                    firstName={formData.firstName}
+                    lastName={formData.lastName}
+                  />
+                  
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-3">
                       <Label htmlFor="lastName" className="text-sm font-semibold text-gray-700 flex items-center">
@@ -374,14 +400,21 @@ const Internships = () => {
 
         {/* Edit Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[600px] bg-gradient-to-br from-blue-50 to-indigo-50">
+          <DialogContent className="sm:max-w-[700px] bg-gradient-to-br from-blue-50 to-indigo-50 animate-scale-in">
             <DialogHeader>
               <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
                 {translations["Modifier le stagiaire"] || "Modifier le stagiaire"}
               </DialogTitle>
             </DialogHeader>
             {editingIntern && (
-              <div className="grid gap-6 py-6">
+              <div className="grid gap-6 py-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
+                <PhotoUpload 
+                  value={editingIntern.photo}
+                  onChange={handleEditPhotoChange}
+                  firstName={editingIntern.firstName}
+                  lastName={editingIntern.lastName}
+                />
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-3">
                     <Label htmlFor="editLastName" className="text-sm font-semibold text-gray-700 flex items-center">

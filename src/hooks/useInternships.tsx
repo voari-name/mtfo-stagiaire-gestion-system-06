@@ -12,6 +12,7 @@ export interface Intern {
   endDate: string;
   status: "début" | "en cours" | "fin";
   gender: "Masculin" | "Féminin";
+  photo?: string;
 }
 
 // Import the notification trigger function
