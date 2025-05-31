@@ -10,7 +10,7 @@ import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, 
 import { useToast } from "@/hooks/use-toast";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Search } from "lucide-react";
+import { Search, User, Calendar, Mail, BookOpen, Star } from "lucide-react";
 import { useDataContext } from "@/contexts/DataContext";
 import { useSettings } from "@/contexts/SettingsContext";
 
@@ -95,34 +95,46 @@ const Internships = () => {
   };
 
   const renderInternCard = (intern) => (
-    <Card key={intern.id} className="overflow-hidden">
+    <Card key={intern.id} className="overflow-hidden shadow-lg hover:shadow-xl transition-all duration-300 border-l-4 border-l-blue-500">
       <CardContent className="p-0">
         <div className="flex flex-col md:flex-row">
-          <div className="p-6 flex-1">
-            <div className="flex items-center space-x-4 mb-4">
-              <div className="h-12 w-12 rounded-full bg-blue-800 flex items-center justify-center text-white text-lg font-bold">
+          <div className="p-6 flex-1 bg-gradient-to-r from-blue-50 to-indigo-50">
+            <div className="flex items-center space-x-4 mb-6">
+              <div className="h-16 w-16 rounded-full bg-gradient-to-br from-blue-600 to-indigo-600 flex items-center justify-center text-white text-xl font-bold shadow-lg">
                 {intern.firstName.charAt(0)}{intern.lastName.charAt(0)}
               </div>
               <div>
-                <h3 className="font-bold text-lg">{intern.lastName} {intern.firstName}</h3>
-                <p className="text-sm text-muted-foreground">{intern.email}</p>
+                <h3 className="font-bold text-xl text-gray-800">{intern.lastName} {intern.firstName}</h3>
+                <p className="text-sm text-gray-600 flex items-center mt-1">
+                  <Mail className="w-4 h-4 mr-2" />
+                  {intern.email}
+                </p>
               </div>
             </div>
             
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <p className="text-sm text-muted-foreground">Intitulé du stage</p>
-                <p className="font-medium">{intern.title}</p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <p className="text-sm text-gray-500 flex items-center mb-2">
+                  <BookOpen className="w-4 h-4 mr-2" />
+                  Intitulé du stage
+                </p>
+                <p className="font-semibold text-gray-800">{intern.title}</p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Période</p>
-                <p className="font-medium">
+              <div className="bg-white p-4 rounded-lg shadow-sm">
+                <p className="text-sm text-gray-500 flex items-center mb-2">
+                  <Calendar className="w-4 h-4 mr-2" />
+                  Période
+                </p>
+                <p className="font-semibold text-gray-800">
                   {new Date(intern.startDate).toLocaleDateString('fr-FR')} au {new Date(intern.endDate).toLocaleDateString('fr-FR')}
                 </p>
               </div>
-              <div>
-                <p className="text-sm text-muted-foreground">Statut</p>
-                <span className={`px-3 py-1 rounded-full text-xs font-medium inline-block ${
+              <div className="bg-white p-4 rounded-lg shadow-sm md:col-span-2">
+                <p className="text-sm text-gray-500 flex items-center mb-2">
+                  <Star className="w-4 h-4 mr-2" />
+                  Statut
+                </p>
+                <span className={`px-4 py-2 rounded-full text-sm font-semibold inline-flex items-center ${
                   intern.status === 'en cours' ? 'bg-blue-100 text-blue-800' :
                   intern.status === 'fin' ? 'bg-green-100 text-green-800' :
                   'bg-amber-100 text-amber-800'
@@ -136,11 +148,11 @@ const Internships = () => {
           
           <div className="bg-gray-50 p-6 flex flex-col justify-center space-y-3 md:w-48">
             {intern.status === 'fin' && (
-              <div className="text-sm text-green-600 font-medium mb-2">
+              <div className="text-sm text-green-600 font-medium mb-2 bg-green-50 p-3 rounded-lg">
                 ✓ Certificat disponible dans les évaluations
               </div>
             )}
-            <Button variant="outline" onClick={() => handleEditIntern(intern)}>
+            <Button variant="outline" onClick={() => handleEditIntern(intern)} className="hover:bg-blue-50 hover:text-blue-700 transition-colors">
               <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                 <path d="M17 3a2.85 2.85 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z" />
               </svg>
@@ -148,7 +160,7 @@ const Internships = () => {
             </Button>
             <AlertDialog>
               <AlertDialogTrigger asChild>
-                <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700">
+                <Button variant="outline" className="border-red-200 text-red-600 hover:bg-red-50 hover:text-red-700 transition-colors">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                     <path d="M3 6h18" /><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6" />
                     <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2" />
@@ -185,7 +197,7 @@ const Internships = () => {
     <MainLayout title={translations["Gestion des stages"] || "Gestion des stages"} currentPage="internships">
       <div className="space-y-6">
         <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center justify-between">
-          <h2 className="text-2xl font-bold">{translations["Stagiaires"] || "Stagiaires"}</h2>
+          <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">{translations["Stagiaires"] || "Stagiaires"}</h2>
           <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
             {/* Search Bar */}
             <div className="relative flex-1 sm:w-64">
@@ -194,107 +206,140 @@ const Internships = () => {
                 placeholder={translations["Rechercher un stagiaire..."] || "Rechercher un stagiaire..."}
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="pl-10"
+                className="pl-10 border-2 focus:border-blue-500 transition-colors"
               />
             </div>
             
             {/* Add Intern Button */}
             <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
               <DialogTrigger asChild>
-                <Button className="whitespace-nowrap">
+                <Button className="whitespace-nowrap bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 shadow-lg">
                   <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="mr-2">
                     <path d="M5 12h14" /><path d="M12 5v14" />
                   </svg>
                   {translations["Ajouter un stagiaire"] || "Ajouter un stagiaire"}
                 </Button>
               </DialogTrigger>
-              <DialogContent className="sm:max-w-[525px]">
+              <DialogContent className="sm:max-w-[600px] bg-gradient-to-br from-blue-50 to-indigo-50">
                 <DialogHeader>
-                  <DialogTitle>{translations["Ajouter un nouveau stagiaire"] || "Ajouter un nouveau stagiaire"}</DialogTitle>
+                  <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                    {translations["Ajouter un nouveau stagiaire"] || "Ajouter un nouveau stagiaire"}
+                  </DialogTitle>
                 </DialogHeader>
                 
-                <div className="grid gap-4 py-4">
+                <div className="grid gap-6 py-6">
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="lastName">{translations["Nom"] || "Nom"}</Label>
+                    <div className="space-y-3">
+                      <Label htmlFor="lastName" className="text-sm font-semibold text-gray-700 flex items-center">
+                        <User className="w-4 h-4 mr-2" />
+                        {translations["Nom"] || "Nom"}
+                      </Label>
                       <Input 
                         id="lastName" 
                         name="lastName" 
                         value={formData.lastName} 
-                        onChange={handleInputChange} 
+                        onChange={handleInputChange}
+                        className="border-2 focus:border-blue-500 transition-colors bg-white"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="firstName">{translations["Prénom"] || "Prénom"}</Label>
+                    <div className="space-y-3">
+                      <Label htmlFor="firstName" className="text-sm font-semibold text-gray-700 flex items-center">
+                        <User className="w-4 h-4 mr-2" />
+                        {translations["Prénom"] || "Prénom"}
+                      </Label>
                       <Input 
                         id="firstName" 
                         name="firstName" 
                         value={formData.firstName} 
-                        onChange={handleInputChange} 
+                        onChange={handleInputChange}
+                        className="border-2 focus:border-blue-500 transition-colors bg-white"
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="title">{translations["Intitulé du stage"] || "Intitulé du stage"}</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="title" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <BookOpen className="w-4 h-4 mr-2" />
+                      {translations["Intitulé du stage"] || "Intitulé du stage"}
+                    </Label>
                     <Input 
                       id="title" 
                       name="title" 
                       value={formData.title} 
-                      onChange={handleInputChange} 
+                      onChange={handleInputChange}
+                      className="border-2 focus:border-blue-500 transition-colors bg-white"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="email" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <Mail className="w-4 h-4 mr-2" />
+                      Email
+                    </Label>
                     <Input 
                       id="email" 
                       name="email" 
                       type="email" 
                       value={formData.email} 
-                      onChange={handleInputChange} 
+                      onChange={handleInputChange}
+                      className="border-2 focus:border-blue-500 transition-colors bg-white"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="startDate">{translations["Date de début"] || "Date de début"}</Label>
+                    <div className="space-y-3">
+                      <Label htmlFor="startDate" className="text-sm font-semibold text-gray-700 flex items-center">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {translations["Date de début"] || "Date de début"}
+                      </Label>
                       <Input 
                         id="startDate" 
                         name="startDate" 
                         type="date" 
                         value={formData.startDate} 
-                        onChange={handleInputChange} 
+                        onChange={handleInputChange}
+                        className="border-2 focus:border-blue-500 transition-colors bg-white"
                       />
                     </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="endDate">{translations["Date de fin"] || "Date de fin"}</Label>
+                    <div className="space-y-3">
+                      <Label htmlFor="endDate" className="text-sm font-semibold text-gray-700 flex items-center">
+                        <Calendar className="w-4 h-4 mr-2" />
+                        {translations["Date de fin"] || "Date de fin"}
+                      </Label>
                       <Input 
                         id="endDate" 
                         name="endDate" 
                         type="date" 
                         value={formData.endDate} 
-                        onChange={handleInputChange} 
+                        onChange={handleInputChange}
+                        className="border-2 focus:border-blue-500 transition-colors bg-white"
                       />
                     </div>
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="status">{translations["Statut"] || "Statut"}</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="status" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <Star className="w-4 h-4 mr-2" />
+                      {translations["Statut"] || "Statut"}
+                    </Label>
                     <Select 
                       value={formData.status} 
                       onValueChange={(value) => handleSelectChange("status", value)}
                     >
-                      <SelectTrigger id="status">
+                      <SelectTrigger id="status" className="border-2 focus:border-blue-500 transition-colors bg-white">
                         <SelectValue placeholder={translations["Sélectionnez un statut"] || "Sélectionnez un statut"} />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectItem value="début">{translations["Début"] || "Début"}</SelectItem>
                         <SelectItem value="en cours">{translations["En cours"] || "En cours"}</SelectItem>
-                        <SelectItem value="fin">{translations["Fin"] || "Fin"}</SelectItem>
+                        <SelectItem value="fin">Terminé</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
-                <div className="flex justify-end space-x-2">
-                  <Button variant="outline" onClick={() => setIsDialogOpen(false)}>{translations["Annuler"] || "Annuler"}</Button>
-                  <Button onClick={handleAddIntern}>{translations["Enregistrer"] || "Enregistrer"}</Button>
+                <div className="flex justify-end space-x-3 pt-4 border-t">
+                  <Button variant="outline" onClick={() => setIsDialogOpen(false)} className="hover:bg-gray-100">
+                    {translations["Annuler"] || "Annuler"}
+                  </Button>
+                  <Button onClick={handleAddIntern} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                    {translations["Enregistrer"] || "Enregistrer"}
+                  </Button>
                 </div>
               </DialogContent>
             </Dialog>
@@ -303,115 +348,157 @@ const Internships = () => {
 
         {/* Edit Dialog */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-          <DialogContent className="sm:max-w-[525px]">
+          <DialogContent className="sm:max-w-[600px] bg-gradient-to-br from-blue-50 to-indigo-50">
             <DialogHeader>
-              <DialogTitle>{translations["Modifier le stagiaire"] || "Modifier le stagiaire"}</DialogTitle>
+              <DialogTitle className="text-2xl font-bold text-center bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                {translations["Modifier le stagiaire"] || "Modifier le stagiaire"}
+              </DialogTitle>
             </DialogHeader>
             {editingIntern && (
-              <div className="grid gap-4 py-4">
-                
+              <div className="grid gap-6 py-6">
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="editLastName">{translations["Nom"] || "Nom"}</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="editLastName" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      {translations["Nom"] || "Nom"}
+                    </Label>
                     <Input 
                       id="editLastName" 
                       name="lastName" 
                       value={editingIntern.lastName} 
-                      onChange={handleEditInputChange} 
+                      onChange={handleEditInputChange}
+                      className="border-2 focus:border-blue-500 transition-colors bg-white"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="editFirstName">{translations["Prénom"] || "Prénom"}</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="editFirstName" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <User className="w-4 h-4 mr-2" />
+                      {translations["Prénom"] || "Prénom"}
+                    </Label>
                     <Input 
                       id="editFirstName" 
                       name="firstName" 
                       value={editingIntern.firstName} 
-                      onChange={handleEditInputChange} 
+                      onChange={handleEditInputChange}
+                      className="border-2 focus:border-blue-500 transition-colors bg-white"
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editTitle">{translations["Intitulé du stage"] || "Intitulé du stage"}</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="editTitle" className="text-sm font-semibold text-gray-700 flex items-center">
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    {translations["Intitulé du stage"] || "Intitulé du stage"}
+                  </Label>
                   <Input 
                     id="editTitle" 
                     name="title" 
                     value={editingIntern.title} 
-                    onChange={handleEditInputChange} 
+                    onChange={handleEditInputChange}
+                    className="border-2 focus:border-blue-500 transition-colors bg-white"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editEmail">Email</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="editEmail" className="text-sm font-semibold text-gray-700 flex items-center">
+                    <Mail className="w-4 h-4 mr-2" />
+                    Email
+                  </Label>
                   <Input 
                     id="editEmail" 
                     name="email" 
                     type="email" 
                     value={editingIntern.email} 
-                    onChange={handleEditInputChange} 
+                    onChange={handleEditInputChange}
+                    className="border-2 focus:border-blue-500 transition-colors bg-white"
                   />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="editStartDate">{translations["Date de début"] || "Date de début"}</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="editStartDate" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      {translations["Date de début"] || "Date de début"}
+                    </Label>
                     <Input 
                       id="editStartDate" 
                       name="startDate" 
                       type="date" 
                       value={editingIntern.startDate} 
-                      onChange={handleEditInputChange} 
+                      onChange={handleEditInputChange}
+                      className="border-2 focus:border-blue-500 transition-colors bg-white"
                     />
                   </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="editEndDate">{translations["Date de fin"] || "Date de fin"}</Label>
+                  <div className="space-y-3">
+                    <Label htmlFor="editEndDate" className="text-sm font-semibold text-gray-700 flex items-center">
+                      <Calendar className="w-4 h-4 mr-2" />
+                      {translations["Date de fin"] || "Date de fin"}
+                    </Label>
                     <Input 
                       id="editEndDate" 
                       name="endDate" 
                       type="date" 
                       value={editingIntern.endDate} 
-                      onChange={handleEditInputChange} 
+                      onChange={handleEditInputChange}
+                      className="border-2 focus:border-blue-500 transition-colors bg-white"
                     />
                   </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="editStatus">{translations["Statut"] || "Statut"}</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="editStatus" className="text-sm font-semibold text-gray-700 flex items-center">
+                    <Star className="w-4 h-4 mr-2" />
+                    {translations["Statut"] || "Statut"}
+                  </Label>
                   <Select 
                     value={editingIntern.status} 
                     onValueChange={(value) => handleEditSelectChange("status", value)}
                   >
-                    <SelectTrigger id="editStatus">
+                    <SelectTrigger id="editStatus" className="border-2 focus:border-blue-500 transition-colors bg-white">
                       <SelectValue placeholder={translations["Sélectionnez un statut"] || "Sélectionnez un statut"} />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="début">{translations["Début"] || "Début"}</SelectItem>
                       <SelectItem value="en cours">{translations["En cours"] || "En cours"}</SelectItem>
-                      <SelectItem value="fin">{translations["Fin"] || "Fin"}</SelectItem>
+                      <SelectItem value="fin">Terminé</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
               </div>
             )}
-            <div className="flex justify-end space-x-2">
-              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)}>{translations["Annuler"] || "Annuler"}</Button>
-              <Button onClick={handleSaveEdit}>{translations["Enregistrer"] || "Enregistrer"}</Button>
+            <div className="flex justify-end space-x-3 pt-4 border-t">
+              <Button variant="outline" onClick={() => setIsEditDialogOpen(false)} className="hover:bg-gray-100">
+                {translations["Annuler"] || "Annuler"}
+              </Button>
+              <Button onClick={handleSaveEdit} className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700">
+                {translations["Enregistrer"] || "Enregistrer"}
+              </Button>
             </div>
           </DialogContent>
         </Dialog>
 
-        <Tabs defaultValue="all">
-          <TabsList className="mb-6">
-            <TabsTrigger value="all">{translations["Tous"] || "Tous"}</TabsTrigger>
-            <TabsTrigger value="debut">{translations["Début"] || "Début"}</TabsTrigger>
-            <TabsTrigger value="ongoing">{translations["En cours"] || "En cours"}</TabsTrigger>
-            <TabsTrigger value="completed">{translations["Terminés"] || "Terminés"}</TabsTrigger>
+        <Tabs defaultValue="all" className="w-full">
+          <TabsList className="mb-6 bg-gradient-to-r from-blue-100 to-indigo-100 p-1 rounded-lg">
+            <TabsTrigger value="all" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              {translations["Tous"] || "Tous"}
+            </TabsTrigger>
+            <TabsTrigger value="debut" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              {translations["Début"] || "Début"}
+            </TabsTrigger>
+            <TabsTrigger value="ongoing" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              {translations["En cours"] || "En cours"}
+            </TabsTrigger>
+            <TabsTrigger value="completed" className="data-[state=active]:bg-white data-[state=active]:shadow-sm">
+              Terminés
+            </TabsTrigger>
           </TabsList>
           
           <TabsContent value="all" className="space-y-6">
             {filteredInterns.length > 0 ? (
               filteredInterns.map(renderInternCard)
             ) : (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">
-                  {searchTerm ? translations["Aucun stagiaire trouvé pour cette recherche"] || "Aucun stagiaire trouvé pour cette recherche" : translations["Aucun stagiaire pour le moment"] || "Aucun stagiaire pour le moment"}
-                </p>
+              <div className="text-center py-12">
+                <div className="bg-gray-50 rounded-lg p-8">
+                  <p className="text-gray-500 text-lg">
+                    {searchTerm ? translations["Aucun stagiaire trouvé pour cette recherche"] || "Aucun stagiaire trouvé pour cette recherche" : translations["Aucun stagiaire pour le moment"] || "Aucun stagiaire pour le moment"}
+                  </p>
+                </div>
               </div>
             )}
           </TabsContent>
@@ -420,8 +507,10 @@ const Internships = () => {
             {filteredInterns.filter(intern => intern.status === 'début').length > 0 ? (
               filteredInterns.filter(intern => intern.status === 'début').map(renderInternCard)
             ) : (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">{translations["Aucun stage au début pour le moment"] || "Aucun stage au début pour le moment"}</p>
+              <div className="text-center py-12">
+                <div className="bg-gray-50 rounded-lg p-8">
+                  <p className="text-gray-500 text-lg">{translations["Aucun stage au début pour le moment"] || "Aucun stage au début pour le moment"}</p>
+                </div>
               </div>
             )}
           </TabsContent>
@@ -430,8 +519,10 @@ const Internships = () => {
             {filteredInterns.filter(intern => intern.status === 'en cours').length > 0 ? (
               filteredInterns.filter(intern => intern.status === 'en cours').map(renderInternCard)
             ) : (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">{translations["Aucun stage en cours pour le moment"] || "Aucun stage en cours pour le moment"}</p>
+              <div className="text-center py-12">
+                <div className="bg-gray-50 rounded-lg p-8">
+                  <p className="text-gray-500 text-lg">{translations["Aucun stage en cours pour le moment"] || "Aucun stage en cours pour le moment"}</p>
+                </div>
               </div>
             )}
           </TabsContent>
@@ -440,8 +531,10 @@ const Internships = () => {
             {filteredInterns.filter(intern => intern.status === 'fin').length > 0 ? (
               filteredInterns.filter(intern => intern.status === 'fin').map(renderInternCard)
             ) : (
-              <div className="text-center py-10">
-                <p className="text-muted-foreground">{translations["Aucun stage terminé pour le moment"] || "Aucun stage terminé pour le moment"}</p>
+              <div className="text-center py-12">
+                <div className="bg-gray-50 rounded-lg p-8">
+                  <p className="text-gray-500 text-lg">Aucun stage terminé pour le moment</p>
+                </div>
               </div>
             )}
           </TabsContent>
