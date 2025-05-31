@@ -23,7 +23,7 @@ interface SidebarProps {
 
 export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: SidebarProps) => {
   const navigate = useNavigate();
-  const { translations } = useSettings();
+  const { translations, standbyMode } = useSettings();
 
   const menuItems = [
     { id: "profile", label: translations["Mon profil"] || "Mon profil", icon: User, path: "/profile" },
@@ -37,23 +37,23 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
   ];
 
   return (
-    <div className={`bg-white shadow-lg transition-all duration-300 animate-slide-in-right ${sidebarOpen ? 'w-64' : 'w-16'} flex flex-col`}>
+    <div className={`bg-white shadow-lg transition-all duration-300 animate-slide-in-right ${sidebarOpen ? 'w-64' : 'w-16'} flex flex-col ${standbyMode ? 'opacity-70 brightness-75' : ''}`}>
       {/* Header */}
       <div className="p-4 border-b flex items-center justify-between">
         {sidebarOpen && (
-          <div className="flex items-center space-x-2 animate-fade-in">
+          <div className="flex items-center space-x-2 animate-fade-in overflow-hidden">
             <img 
               src="/lovable-uploads/bbbcd3ef-0021-42ca-8d32-8796bd1cf670.png" 
               alt="MTFoP Logo" 
-              className="h-8 w-auto"
+              className="h-8 w-auto flex-shrink-0"
             />
-            <span className="font-bold text-blue-800">MTFoP</span>
+            <span className={`font-bold text-blue-800 truncate ${standbyMode ? 'text-sm' : 'text-base'}`}>MTFoP</span>
           </div>
         )}
         <Button
           variant="ghost"
           onClick={() => setSidebarOpen(!sidebarOpen)}
-          className="p-2 hover-scale transition-all duration-300"
+          className={`p-2 hover-scale transition-all duration-300 flex-shrink-0 ${standbyMode ? 'text-gray-600' : ''}`}
         >
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M3 12h18m-9-9l9 9-9 9"/>
@@ -62,7 +62,7 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 p-4">
+      <nav className="flex-1 p-4 overflow-y-auto">
         <ul className="space-y-2">
           {menuItems.map((item) => {
             const IconComponent = item.icon;
@@ -70,13 +70,20 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
               <li key={item.id}>
                 <Button
                   variant={currentPage === item.id ? "default" : "ghost"}
-                  className={`w-full justify-start transition-all duration-300 hover-scale ${
-                    currentPage === item.id ? "bg-blue-800 text-white" : "hover:bg-blue-50"
-                  }`}
+                  className={`w-full justify-start transition-all duration-300 hover-scale overflow-hidden ${
+                    currentPage === item.id 
+                      ? `bg-blue-800 text-white ${standbyMode ? 'bg-blue-700' : ''}` 
+                      : `hover:bg-blue-50 ${standbyMode ? 'text-gray-600 hover:bg-blue-25' : ''}`
+                  } ${standbyMode ? 'py-1.5' : 'py-2'}`}
                   onClick={() => navigate(item.path)}
+                  title={sidebarOpen ? undefined : item.label}
                 >
-                  <IconComponent size={18} />
-                  {sidebarOpen && <span className="ml-3 animate-fade-in">{item.label}</span>}
+                  <IconComponent size={standbyMode ? 16 : 18} className="flex-shrink-0" />
+                  {sidebarOpen && (
+                    <span className={`ml-3 animate-fade-in truncate ${standbyMode ? 'text-xs' : 'text-sm'}`}>
+                      {item.label}
+                    </span>
+                  )}
                 </Button>
               </li>
             );
@@ -89,10 +96,17 @@ export const Sidebar = ({ sidebarOpen, setSidebarOpen, currentPage, onLogout }: 
         <Button
           variant="ghost"
           onClick={onLogout}
-          className="w-full justify-start text-red-600 hover:bg-red-50 hover-scale transition-all duration-300"
+          className={`w-full justify-start text-red-600 hover:bg-red-50 hover-scale transition-all duration-300 overflow-hidden ${
+            standbyMode ? 'text-red-500 py-1.5' : 'py-2'
+          }`}
+          title={sidebarOpen ? undefined : translations["Déconnexion"] || "Déconnexion"}
         >
-          <span className="text-lg">🚪</span>
-          {sidebarOpen && <span className="ml-3 animate-fade-in">{translations["Déconnexion"] || "Déconnexion"}</span>}
+          <span className={`${standbyMode ? 'text-base' : 'text-lg'} flex-shrink-0`}>🚪</span>
+          {sidebarOpen && (
+            <span className={`ml-3 animate-fade-in truncate ${standbyMode ? 'text-xs' : 'text-sm'}`}>
+              {translations["Déconnexion"] || "Déconnexion"}
+            </span>
+          )}
         </Button>
       </div>
     </div>
