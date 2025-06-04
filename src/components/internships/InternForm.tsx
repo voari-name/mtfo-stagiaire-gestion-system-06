@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -147,7 +146,8 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
           </div>
         </DialogHeader>
         
-      <div className="grid gap-8 py-6 animate-fade-in max-h-[70vh] overflow-y-auto" style={{animationDelay: '0.1s'}}>
+        {/* Esorina max-h sy overflow-y-auto eto! */}
+        <div className="grid gap-8 py-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
           {/* Photo Section */}
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-purple-200 shadow-lg">
             <PhotoUpload 
@@ -261,7 +261,7 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
               </div>
             </div>
           </div>
-
+  
           {/* Dates & Status Section */}
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-orange-200 shadow-lg">
             <div className="flex items-center mb-6">
@@ -325,7 +325,8 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
           </div>
         </div>
         
-        <div className="flex justify-end space-x-4 pt-6 border-t border-purple-200 bg-white/50 rounded-b-lg">
+        {/* sticky bottom-0 z-20 added here */}
+        <div className="flex justify-end space-x-4 pt-6 border-t border-purple-200 bg-white/50 rounded-b-lg sticky bottom-0 z-20">
           <Button 
             variant="outline" 
             onClick={onClose} 
@@ -335,7 +336,7 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
           </Button>
           <Button 
             onClick={handleSubmit} 
-            className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 hover:from-purple-700 hover:via-blue-700 hover:to-cyan-700 text-white shadow-lg rounded-xl px-8 h-12 transition-all duration-300 transform hover:scale-105"
+            className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 hover:from-purple-700 hover:via-blue-700 hover:to-cyan-700 text-white shadow-lg rounded-xl px-8 h-12 transition-all duration-300"
           >
             <Sparkles className="w-4 h-4 mr-2" />
             {translations["Enregistrer"] || "Enregistrer"}
