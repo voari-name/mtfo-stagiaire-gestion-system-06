@@ -2,11 +2,11 @@
 import { useToast } from "@/hooks/use-toast";
 import { EvaluationType } from "@/types/evaluations";
 import { generateEvaluationPDF } from "@/utils/evaluationPdfGenerator";
-import { useDataContext } from "@/contexts/DataContext";
+import { useEvaluationsContext } from "@/contexts/EvaluationsContext";
 import { useState } from "react";
 
 export const useEvaluations = () => {
-  const { evaluations, addEvaluation: addEvaluationToContext, updateEvaluation, deleteEvaluation } = useDataContext();
+  const { evaluations, addEvaluation: addEvaluationToContext, updateEvaluation, deleteEvaluation } = useEvaluationsContext();
   const [currentEvaluation, setCurrentEvaluation] = useState<EvaluationType | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
