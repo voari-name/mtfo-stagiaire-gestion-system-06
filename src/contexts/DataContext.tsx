@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 
@@ -12,6 +11,8 @@ export interface Intern {
   startDate: string;
   endDate: string;
   status: "début" | "en cours" | "fin";
+  gender: "Masculin" | "Féminin";
+  photo?: string;
 }
 
 export interface Task {
@@ -84,7 +85,14 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
   // Intern functions
   const addIntern = (newIntern: Intern) => {
-    setInterns(prev => [...prev, newIntern]);
+    // Ensure the intern has all required fields including photo
+    const internWithDefaults = {
+      ...newIntern,
+      photo: newIntern.photo || "",
+      gender: newIntern.gender || "Masculin"
+    };
+    
+    setInterns(prev => [...prev, internWithDefaults]);
     toast({
       title: "Stagiaire ajouté",
       description: `${newIntern.firstName} ${newIntern.lastName} a été ajouté avec succès.`,
@@ -103,8 +111,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   const updateIntern = (updatedIntern: Intern) => {
+    // Ensure the intern has all required fields including photo
+    const internWithDefaults = {
+      ...updatedIntern,
+      photo: updatedIntern.photo || "",
+      gender: updatedIntern.gender || "Masculin"
+    };
+    
     setInterns(prev => prev.map(intern => 
-      intern.id === updatedIntern.id ? updatedIntern : intern
+      intern.id === updatedIntern.id ? internWithDefaults : intern
     ));
     toast({
       title: "Stagiaire modifié",

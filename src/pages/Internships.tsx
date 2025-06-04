@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { Card, CardContent } from "@/components/ui/card";
@@ -69,13 +70,67 @@ const Internships = () => {
     setEditingIntern({ ...editingIntern, photo: photoUrl });
   };
 
+  const validateForm = () => {
+    if (!formData.firstName.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le prénom est obligatoire",
+        variant: "destructive"
+      });
+      return false;
+    }
+    if (!formData.lastName.trim()) {
+      toast({
+        title: "Erreur", 
+        description: "Le nom est obligatoire",
+        variant: "destructive"
+      });
+      return false;
+    }
+    if (!formData.email.trim()) {
+      toast({
+        title: "Erreur",
+        description: "L'email est obligatoire", 
+        variant: "destructive"
+      });
+      return false;
+    }
+    if (!formData.title.trim()) {
+      toast({
+        title: "Erreur",
+        description: "L'intitulé du stage est obligatoire",
+        variant: "destructive"
+      });
+      return false;
+    }
+    if (!formData.startDate) {
+      toast({
+        title: "Erreur",
+        description: "La date de début est obligatoire",
+        variant: "destructive"
+      });
+      return false;
+    }
+    if (!formData.endDate) {
+      toast({
+        title: "Erreur",
+        description: "La date de fin est obligatoire",
+        variant: "destructive"
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleAddIntern = () => {
+    if (!validateForm()) return;
+
     const newIntern = {
       id: Date.now(),
-      firstName: formData.firstName,
-      lastName: formData.lastName,
-      title: formData.title,
-      email: formData.email,
+      firstName: formData.firstName.trim(),
+      lastName: formData.lastName.trim(),
+      title: formData.title.trim(),
+      email: formData.email.trim(),
       startDate: formData.startDate,
       endDate: formData.endDate,
       status: formData.status,
@@ -104,8 +159,54 @@ const Internships = () => {
     setIsEditDialogOpen(true);
   };
 
+  const validateEditForm = () => {
+    if (!editingIntern.firstName.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le prénom est obligatoire",
+        variant: "destructive"
+      });
+      return false;
+    }
+    if (!editingIntern.lastName.trim()) {
+      toast({
+        title: "Erreur",
+        description: "Le nom est obligatoire", 
+        variant: "destructive"
+      });
+      return false;
+    }
+    if (!editingIntern.email.trim()) {
+      toast({
+        title: "Erreur",
+        description: "L'email est obligatoire",
+        variant: "destructive"
+      });
+      return false;
+    }
+    if (!editingIntern.title.trim()) {
+      toast({
+        title: "Erreur", 
+        description: "L'intitulé du stage est obligatoire",
+        variant: "destructive"
+      });
+      return false;
+    }
+    return true;
+  };
+
   const handleSaveEdit = () => {
-    updateIntern(editingIntern);
+    if (!validateEditForm()) return;
+    
+    const updatedIntern = {
+      ...editingIntern,
+      firstName: editingIntern.firstName.trim(),
+      lastName: editingIntern.lastName.trim(),
+      title: editingIntern.title.trim(),
+      email: editingIntern.email.trim()
+    };
+    
+    updateIntern(updatedIntern);
     setIsEditDialogOpen(false);
   };
 
