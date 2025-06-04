@@ -80,19 +80,25 @@ const Evaluations = () => {
       currentPage="evaluations" 
       username="RAHAJANIAINA Olivier"
     >
-      <div className="space-y-6 animate-fade-in">
-        <EvaluationsHeader onEvaluationCreated={addEvaluation} />
+      <div className="space-y-8 animate-fade-in min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+        <EvaluationsHeader />
 
-        <CompletedInternsSection
-          completedInterns={completedInterns}
-          evaluations={evaluations}
-          onCreateEvaluation={handleCreateEvaluationFromIntern}
-        />
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-blue-200">
+          <CompletedInternsSection
+            completedInterns={completedInterns}
+            evaluations={evaluations}
+            onCreateEvaluation={handleCreateEvaluationFromIntern}
+          />
+        </div>
 
-        <div className="space-y-4">
-          <h3 className="text-lg font-semibold text-gray-700">
-            {translations["Évaluations complétées"] || "Évaluations complétées"}
-          </h3>
+        <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-8 shadow-xl border border-purple-200">
+          <div className="mb-6">
+            <h3 className="text-2xl font-bold text-gray-800 mb-2 flex items-center">
+              <div className="w-1 h-8 bg-gradient-to-b from-purple-500 to-indigo-500 rounded-full mr-4"></div>
+              {translations["Évaluations complétées"] || "Évaluations complétées"}
+            </h3>
+            <p className="text-gray-600">Consultez et gérez toutes les évaluations terminées</p>
+          </div>
           <EvaluationsList
             evaluations={evaluations}
             onOpenEvaluation={handleOpenEvaluation}
