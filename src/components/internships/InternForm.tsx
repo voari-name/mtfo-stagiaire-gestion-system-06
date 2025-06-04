@@ -147,7 +147,7 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
           </div>
         </DialogHeader>
         
-        <div className="grid gap-8 py-6 animate-fade-in max-h-[70vh] overflow-y-auto" style={{animationDelay: '0.1s'}}>
+      <div className="grid gap-8 py-6 animate-fade-in max-h-[70vh] overflow-y-auto" style={{animationDelay: '0.1s'}}>
           {/* Photo Section */}
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-purple-200 shadow-lg">
             <PhotoUpload 
