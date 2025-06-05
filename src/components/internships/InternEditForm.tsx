@@ -87,7 +87,11 @@ const InternEditForm = ({ isOpen, onClose, onSubmit, intern }: InternEditFormPro
   };
 
   const handleSaveEdit = () => {
-    if (!validateEditForm() || !editingIntern) return;
+    console.log("Bouton Enregistrer cliqué dans EditForm");
+    if (!validateEditForm() || !editingIntern) {
+      console.log("Validation échouée dans EditForm");
+      return;
+    }
     
     const updatedIntern = {
       ...editingIntern,
@@ -97,7 +101,23 @@ const InternEditForm = ({ isOpen, onClose, onSubmit, intern }: InternEditFormPro
       email: editingIntern.email.trim()
     };
     
+    console.log("Données du stagiaire modifié:", updatedIntern);
     onSubmit(updatedIntern);
+    
+    toast({
+      title: "Succès",
+      description: "Le stagiaire a été modifié avec succès",
+    });
+    
+    onClose();
+  };
+
+  const handleCancel = () => {
+    console.log("Bouton Annuler cliqué dans EditForm");
+    // Reset to original intern data
+    if (intern) {
+      setEditingIntern({ ...intern });
+    }
     onClose();
   };
 
@@ -105,7 +125,7 @@ const InternEditForm = ({ isOpen, onClose, onSubmit, intern }: InternEditFormPro
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 animate-scale-in border-2 border-amber-200 shadow-2xl">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto bg-gradient-to-br from-amber-50 via-orange-50 to-red-50 animate-scale-in border-2 border-amber-200 shadow-2xl">
         <DialogHeader className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 opacity-10 rounded-t-lg"></div>
           <div className="relative z-10 text-center py-6">
@@ -121,7 +141,7 @@ const InternEditForm = ({ isOpen, onClose, onSubmit, intern }: InternEditFormPro
           </div>
         </DialogHeader>
         
-        <div className="grid gap-8 py-6 animate-fade-in max-h-[70vh] overflow-y-auto" style={{animationDelay: '0.1s'}}>
+        <div className="grid gap-8 py-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
           {/* Photo Section */}
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-amber-200 shadow-lg">
             <PhotoUpload 
@@ -295,21 +315,26 @@ const InternEditForm = ({ isOpen, onClose, onSubmit, intern }: InternEditFormPro
           </div>
         </div>
         
-        <div className="flex justify-end space-x-4 pt-6 border-t border-amber-200 bg-white/50 rounded-b-lg">
-          <Button 
-            variant="outline" 
-            onClick={onClose} 
-            className="hover:bg-gray-100 border-2 border-gray-300 rounded-xl px-8 h-12 transition-all duration-300"
-          >
-            {translations["Annuler"] || "Annuler"}
-          </Button>
-          <Button 
-            onClick={handleSaveEdit} 
-            className="bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 hover:from-amber-700 hover:via-orange-700 hover:to-red-700 text-white shadow-lg rounded-xl px-8 h-12 transition-all duration-300 transform hover:scale-105"
-          >
-            <Edit className="w-4 h-4 mr-2" />
-            {translations["Enregistrer"] || "Enregistrer"}
-          </Button>
+        {/* Buttons Section - Fixed at bottom with better visibility */}
+        <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm border-t-2 border-amber-200 p-6 rounded-b-lg">
+          <div className="flex flex-col sm:flex-row justify-end gap-4">
+            <Button 
+              type="button"
+              variant="outline" 
+              onClick={handleCancel} 
+              className="w-full sm:w-auto hover:bg-gray-100 border-2 border-gray-300 rounded-xl px-8 h-12 transition-all duration-300 font-semibold"
+            >
+              {translations["Annuler"] || "Annuler"}
+            </Button>
+            <Button 
+              type="button"
+              onClick={handleSaveEdit} 
+              className="w-full sm:w-auto bg-gradient-to-r from-amber-600 via-orange-600 to-red-600 hover:from-amber-700 hover:via-orange-700 hover:to-red-700 text-white shadow-lg rounded-xl px-8 h-12 transition-all duration-300 transform hover:scale-105 font-semibold"
+            >
+              <Edit className="w-4 h-4 mr-2" />
+              {translations["Enregistrer"] || "Enregistrer"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>

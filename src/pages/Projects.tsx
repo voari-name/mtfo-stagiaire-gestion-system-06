@@ -8,8 +8,7 @@ import ProjectsList from "@/components/projects/ProjectsList";
 import ProjectDetails from "@/components/projects/ProjectDetails";
 import EditProjectDialog from "@/components/projects/EditProjectDialog";
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Plus, Search, FolderPlus } from "lucide-react";
+import { Search, FolderPlus } from "lucide-react";
 import type { Project } from "@/types/dataTypes";
 
 const Projects = () => {
@@ -26,6 +25,13 @@ const Projects = () => {
     project.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
     (project.description && project.description.toLowerCase().includes(searchTerm.toLowerCase()))
   );
+
+  // Calculate progress for projects
+  const calculateProgress = (tasks: any[]) => {
+    if (!tasks || tasks.length === 0) return 0;
+    const completedTasks = tasks.filter(task => task.status === 'completed').length;
+    return Math.round((completedTasks / tasks.length) * 100);
+  };
 
   const handleViewDetails = (project: Project) => {
     setSelectedProject(project);
@@ -58,7 +64,6 @@ const Projects = () => {
       >
         <ProjectDetails
           project={selectedProject}
-          onBack={handleBackToList}
           onEdit={() => handleEditProject(selectedProject)}
           onDelete={() => {
             deleteProject(selectedProject.id);
@@ -76,7 +81,7 @@ const Projects = () => {
       username="RAHAJANIAINA Olivier"
     >
       <div className="space-y-8 animate-fade-in min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
-        {/* Enhanced Header */}
+        {/* Enhanced Header - No New Project Button */}
         <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl p-8 shadow-xl">
           <div className="flex justify-between items-center">
             <div className="text-white">
@@ -85,7 +90,7 @@ const Projects = () => {
                 {translations["Gestion des projets"] || "Gestion des projets"}
               </h2>
               <p className="text-emerald-100 text-lg">
-                Créez, organisez et suivez vos projets de stage
+                Organisez et suivez vos projets de stage créés depuis la gestion des stagiaires
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -99,13 +104,6 @@ const Projects = () => {
                 />
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-500" />
               </div>
-              <Button
-                onClick={() => setIsCreateDialogOpen(true)}
-                className="bg-white text-emerald-600 hover:bg-emerald-50 shadow-lg rounded-xl px-6 h-12 transition-all duration-300 transform hover:scale-105 font-semibold"
-              >
-                <Plus className="w-5 h-5 mr-2" />
-                {translations["Nouveau projet"] || "Nouveau projet"}
-              </Button>
             </div>
           </div>
         </div>
@@ -170,13 +168,14 @@ const Projects = () => {
             <p className="text-gray-600">
               {filteredProjects.length > 0 
                 ? `${filteredProjects.length} projet(s) trouvé(s)`
-                : "Aucun projet disponible"
+                : "Aucun projet disponible - Créez des projets depuis la gestion des stagiaires"
               }
             </p>
           </div>
           
           <ProjectsList
             projects={filteredProjects}
+            calculateProgress={calculateProgress}
             onViewDetails={handleViewDetails}
             onEditProject={handleEditProject}
             onDeleteProject={deleteProject}
