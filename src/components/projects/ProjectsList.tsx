@@ -1,7 +1,7 @@
 
 import React from "react";
 import ProjectCard from "./ProjectCard";
-import { Project } from "@/hooks/useProjects";
+import type { Project } from "@/types/dataTypes";
 
 interface ProjectsListProps {
   projects: Project[];
