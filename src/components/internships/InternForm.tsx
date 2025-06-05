@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -97,7 +98,11 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
   };
 
   const handleSubmit = () => {
-    if (!validateForm()) return;
+    console.log("Bouton Enregistrer cliqué");
+    if (!validateForm()) {
+      console.log("Validation échouée");
+      return;
+    }
 
     const newIntern = {
       id: Date.now(),
@@ -112,7 +117,10 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
       photo: formData.photo
     };
     
+    console.log("Données du nouveau stagiaire:", newIntern);
     onSubmit(newIntern);
+    
+    // Réinitialiser le formulaire
     setFormData({
       lastName: "",
       firstName: "",
@@ -125,12 +133,34 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
       photo: ""
     });
     
+    toast({
+      title: "Succès",
+      description: "Le stagiaire a été ajouté avec succès",
+    });
+    
+    onClose();
+  };
+
+  const handleCancel = () => {
+    console.log("Bouton Annuler cliqué");
+    // Réinitialiser le formulaire
+    setFormData({
+      lastName: "",
+      firstName: "",
+      title: "",
+      email: "",
+      startDate: "",
+      endDate: "",
+      status: "début",
+      gender: "Masculin",
+      photo: ""
+    });
     onClose();
   };
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-[800px] bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50 animate-scale-in border-2 border-purple-200 shadow-2xl">
+      <DialogContent className="sm:max-w-[800px] max-h-[90vh] overflow-y-auto bg-gradient-to-br from-purple-50 via-blue-50 to-cyan-50 animate-scale-in border-2 border-purple-200 shadow-2xl">
         <DialogHeader className="relative overflow-hidden">
           <div className="absolute inset-0 bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 opacity-10 rounded-t-lg"></div>
           <div className="relative z-10 text-center py-6">
@@ -146,7 +176,6 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
           </div>
         </DialogHeader>
         
-        {/* Esorina max-h sy overflow-y-auto eto! */}
         <div className="grid gap-8 py-6 animate-fade-in" style={{animationDelay: '0.1s'}}>
           {/* Photo Section */}
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 border border-purple-200 shadow-lg">
@@ -325,22 +354,26 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
           </div>
         </div>
         
-        {/* sticky bottom-0 z-20 added here */}
-        <div className="flex justify-end space-x-4 pt-6 border-t border-purple-200 bg-white/50 rounded-b-lg sticky bottom-0 z-20">
-          <Button 
-            variant="outline" 
-            onClick={onClose} 
-            className="hover:bg-gray-100 border-2 border-gray-300 rounded-xl px-8 h-12 transition-all duration-300"
-          >
-            {translations["Annuler"] || "Annuler"}
-          </Button>
-          <Button 
-            onClick={handleSubmit} 
-            className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 hover:from-purple-700 hover:via-blue-700 hover:to-cyan-700 text-white shadow-lg rounded-xl px-8 h-12 transition-all duration-300"
-          >
-            <Sparkles className="w-4 h-4 mr-2" />
-            {translations["Enregistrer"] || "Enregistrer"}
-          </Button>
+        {/* Buttons Section - Fixed at bottom with better visibility */}
+        <div className="sticky bottom-0 bg-white/95 backdrop-blur-sm border-t-2 border-purple-200 p-6 rounded-b-lg">
+          <div className="flex flex-col sm:flex-row justify-end gap-4">
+            <Button 
+              type="button"
+              variant="outline" 
+              onClick={handleCancel} 
+              className="w-full sm:w-auto hover:bg-gray-100 border-2 border-gray-300 rounded-xl px-8 h-12 transition-all duration-300 font-semibold"
+            >
+              {translations["Annuler"] || "Annuler"}
+            </Button>
+            <Button 
+              type="button"
+              onClick={handleSubmit} 
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 hover:from-purple-700 hover:via-blue-700 hover:to-cyan-700 text-white shadow-lg rounded-xl px-8 h-12 transition-all duration-300 font-semibold"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              {translations["Enregistrer"] || "Enregistrer"}
+            </Button>
+          </div>
         </div>
       </DialogContent>
     </Dialog>
