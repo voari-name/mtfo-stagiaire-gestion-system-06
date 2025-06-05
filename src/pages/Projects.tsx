@@ -3,12 +3,14 @@ import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { useProjectsContext } from "@/contexts/ProjectsContext";
 import { useSettings } from "@/contexts/SettingsContext";
+import { useInternProjectSync } from "@/hooks/useInternProjectSync";
 import CreateProjectDialog from "@/components/projects/CreateProjectDialog";
 import ProjectsList from "@/components/projects/ProjectsList";
 import ProjectDetails from "@/components/projects/ProjectDetails";
 import EditProjectDialog from "@/components/projects/EditProjectDialog";
 import { Input } from "@/components/ui/input";
-import { Search, FolderPlus } from "lucide-react";
+import { Search, FolderPlus, ArrowLeft } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import type { Project } from "@/types/dataTypes";
 
 const Projects = () => {
@@ -19,6 +21,9 @@ const Projects = () => {
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
+
+  // Synchroniser automatiquement les stagiaires avec les projets
+  useInternProjectSync();
 
   // Filter projects based on search term
   const filteredProjects = projects.filter(project =>
@@ -47,6 +52,18 @@ const Projects = () => {
       updateProject(editingProject);
       setIsEditDialogOpen(false);
       setEditingProject(null);
+      // Mettre à jour le projet sélectionné s'il correspond
+      if (selectedProject && selectedProject.id === editingProject.id) {
+        setSelectedProject(editingProject);
+      }
+    }
+  };
+
+  const handleDeleteProject = (projectId: number) => {
+    deleteProject(projectId);
+    // Si le projet supprimé était sélectionné, revenir à la liste
+    if (selectedProject && selectedProject.id === projectId) {
+      setSelectedProject(null);
     }
   };
 
@@ -62,14 +79,22 @@ const Projects = () => {
         currentPage="projects" 
         username="RAHAJANIAINA Olivier"
       >
-        <ProjectDetails
-          project={selectedProject}
-          onEdit={() => handleEditProject(selectedProject)}
-          onDelete={() => {
-            deleteProject(selectedProject.id);
-            handleBackToList();
-          }}
-        />
+        <div className="space-y-6">
+          <Button 
+            onClick={handleBackToList}
+            variant="outline"
+            className="mb-4 hover:bg-gray-100"
+          >
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            {translations["Retour à la liste"] || "Retour à la liste"}
+          </Button>
+          
+          <ProjectDetails
+            project={selectedProject}
+            onEdit={() => handleEditProject(selectedProject)}
+            onDelete={() => handleDeleteProject(selectedProject.id)}
+          />
+        </div>
       </MainLayout>
     );
   }
@@ -81,7 +106,7 @@ const Projects = () => {
       username="RAHAJANIAINA Olivier"
     >
       <div className="space-y-8 animate-fade-in min-h-screen bg-gradient-to-br from-emerald-50 via-teal-50 to-cyan-50">
-        {/* Enhanced Header - No New Project Button */}
+        {/* Enhanced Header */}
         <div className="bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 rounded-2xl p-8 shadow-xl">
           <div className="flex justify-between items-center">
             <div className="text-white">
@@ -90,7 +115,8 @@ const Projects = () => {
                 {translations["Gestion des projets"] || "Gestion des projets"}
               </h2>
               <p className="text-emerald-100 text-lg">
-                Organisez et suivez vos projets de stage créés depuis la gestion des stagiaires
+                {translations["Organisez et suivez vos projets de stage créés depuis la gestion des stagiaires"] || 
+                 "Organisez et suivez vos projets de stage créés depuis la gestion des stagiaires"}
               </p>
             </div>
             <div className="flex items-center space-x-4">
@@ -113,7 +139,9 @@ const Projects = () => {
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-emerald-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-emerald-600 text-sm font-semibold">Total des projets</p>
+                <p className="text-emerald-600 text-sm font-semibold">
+                  {translations["Total des projets"] || "Total des projets"}
+                </p>
                 <p className="text-3xl font-bold text-gray-800">{projects.length}</p>
               </div>
               <div className="w-12 h-12 bg-emerald-100 rounded-full flex items-center justify-center">
@@ -125,7 +153,9 @@ const Projects = () => {
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-teal-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-teal-600 text-sm font-semibold">Projets actifs</p>
+                <p className="text-teal-600 text-sm font-semibold">
+                  {translations["Projets actifs"] || "Projets actifs"}
+                </p>
                 <p className="text-3xl font-bold text-gray-800">{projects.filter(p => {
                   const today = new Date();
                   const startDate = new Date(p.startDate);
@@ -142,7 +172,9 @@ const Projects = () => {
           <div className="bg-white/70 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-cyan-200">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-cyan-600 text-sm font-semibold">Projets terminés</p>
+                <p className="text-cyan-600 text-sm font-semibold">
+                  {translations["Projets terminés"] || "Projets terminés"}
+                </p>
                 <p className="text-3xl font-bold text-gray-800">{projects.filter(p => {
                   const today = new Date();
                   const endDate = new Date(p.endDate);
@@ -167,8 +199,9 @@ const Projects = () => {
             </h3>
             <p className="text-gray-600">
               {filteredProjects.length > 0 
-                ? `${filteredProjects.length} projet(s) trouvé(s)`
-                : "Aucun projet disponible - Créez des projets depuis la gestion des stagiaires"
+                ? `${filteredProjects.length} ${translations["projet(s) trouvé(s)"] || "projet(s) trouvé(s)"}`
+                : translations["Aucun projet disponible - Les projets sont créés automatiquement depuis la gestion des stagiaires"] || 
+                  "Aucun projet disponible - Les projets sont créés automatiquement depuis la gestion des stagiaires"
               }
             </p>
           </div>
@@ -178,17 +211,11 @@ const Projects = () => {
             calculateProgress={calculateProgress}
             onViewDetails={handleViewDetails}
             onEditProject={handleEditProject}
-            onDeleteProject={deleteProject}
+            onDeleteProject={handleDeleteProject}
           />
         </div>
 
         {/* Dialogs */}
-        <CreateProjectDialog
-          open={isCreateDialogOpen}
-          onOpenChange={setIsCreateDialogOpen}
-          onProjectCreated={addProject}
-        />
-
         <EditProjectDialog
           project={editingProject}
           open={isEditDialogOpen}
