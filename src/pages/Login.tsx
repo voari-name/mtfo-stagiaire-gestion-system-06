@@ -5,71 +5,21 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useToast } from "@/hooks/use-toast";
-import { useAuth } from "@/hooks/useAuth";
-import axios from "axios";
-
-const API_URL = 'http://localhost:5000/api';
+import { useAuth } from "@/contexts/AuthContext";
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState<string | null>(null);
-  const [initializing, setInitializing] = useState(true);
   const navigate = useNavigate();
-  const { toast } = useToast();
-  const { login, loading, error: authError, user } = useAuth();
-
-  // Vérifier si un utilisateur admin existe déjà, sinon en créer un par défaut
-  useEffect(() => {
-    const checkOrCreateAdmin = async () => {
-      try {
-        // Vérifier si la connexion à la base de données est établie
-        await axios.get(`${API_URL}`);
-        
-        // Créer un utilisateur admin par défaut si nécessaire
-        try {
-          await axios.post(`${API_URL}/users/register`, {
-            username: "RAHAJANIAINA",
-            password: "Olivier",
-            firstName: "Olivier",
-            lastName: "RAHAJANIAINA",
-            email: "admin@mtfop.mg",
-            role: "admin"
-          });
-          console.log("Utilisateur admin créé avec succès");
-        } catch (err: any) {
-          // Si l'erreur est que l'utilisateur existe déjà, c'est normal
-          if (err.response?.status !== 400) {
-            console.error("Erreur lors de la création de l'utilisateur admin:", err);
-          }
-        }
-      } catch (err) {
-        console.error("Erreur de connexion au serveur:", err);
-        toast({
-          title: "Erreur de connexion",
-          description: "Impossible de se connecter au serveur. Veuillez réessayer plus tard.",
-          variant: "destructive"
-        });
-      } finally {
-        setInitializing(false);
-      }
-    };
-    
-    checkOrCreateAdmin();
-  }, [toast]);
+  const { login, loading, error, user } = useAuth();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    await login(username, password);
-  };
-
-  useEffect(() => {
-    if (authError) {
-      setError(authError);
+    const success = await login(username, password);
+    if (success) {
+      navigate("/profile");
     }
-  }, [authError]);
+  };
 
   useEffect(() => {
     // Si l'utilisateur est déjà connecté, rediriger vers le profil
@@ -124,11 +74,6 @@ const Login = () => {
             <CardDescription className="text-center animate-fade-in" style={{animationDelay: '0.2s'}}>
               Entrez vos identifiants pour accéder à la plateforme
             </CardDescription>
-            {initializing && (
-              <div className="animate-pulse text-center text-sm text-blue-600 mt-2">
-                Initialisation en cours...
-              </div>
-            )}
           </CardHeader>
           <form onSubmit={handleLogin}>
             <CardContent className="space-y-4 animate-fade-in" style={{animationDelay: '0.4s'}}>
@@ -141,7 +86,7 @@ const Login = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="transition-all duration-300 focus:scale-105"
-                  disabled={loading || initializing}
+                  disabled={loading}
                 />
               </div>
               <div className="space-y-2">
@@ -154,7 +99,7 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="transition-all duration-300 focus:scale-105"
-                  disabled={loading || initializing}
+                  disabled={loading}
                 />
               </div>
               {error && (
@@ -167,7 +112,7 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-blue-800 hover:bg-blue-900 hover-scale transition-all duration-300"
-                disabled={loading || initializing}
+                disabled={loading}
               >
                 {loading ? 'Connexion en cours...' : 'Se connecter'}
               </Button>
