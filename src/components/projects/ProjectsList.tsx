@@ -19,7 +19,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({
   onEditProject,
   onDeleteProject
 }) => {
-  const { getProjectProgress } = useProjectsLogic();
+  const { calculateProjectProgress } = useProjectsLogic();
 
   if (projects.length === 0) {
     return (
@@ -35,7 +35,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {projects.map(project => {
-        const progress = getProjectProgress(project);
+        const progress = calculateProjectProgress(project);
         return (
           <ProjectCard
             key={project.id}
