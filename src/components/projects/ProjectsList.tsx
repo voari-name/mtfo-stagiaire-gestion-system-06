@@ -1,6 +1,7 @@
 
 import React from "react";
 import ProjectCard from "./ProjectCard";
+import { useProjectsLogic } from "@/hooks/useProjectsLogic";
 import type { Project } from "@/types/dataTypes";
 
 interface ProjectsListProps {
@@ -18,11 +19,15 @@ const ProjectsList: React.FC<ProjectsListProps> = ({
   onEditProject,
   onDeleteProject
 }) => {
+  const { getProjectProgress } = useProjectsLogic();
+
   if (projects.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-gray-500 text-lg mb-4">Aucun projet trouvé</div>
-        <p className="text-gray-400">Cliquez sur "Nouveau projet" pour commencer</p>
+        <p className="text-gray-400">
+          Les projets sont créés automatiquement depuis la gestion des stagiaires
+        </p>
       </div>
     );
   }
@@ -30,7 +35,7 @@ const ProjectsList: React.FC<ProjectsListProps> = ({
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {projects.map(project => {
-        const progress = calculateProgress(project.tasks);
+        const progress = getProjectProgress(project);
         return (
           <ProjectCard
             key={project.id}
