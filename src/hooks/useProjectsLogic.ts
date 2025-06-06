@@ -1,5 +1,6 @@
 
 import { useEffect } from 'react';
+import type { Project } from '@/types/dataTypes';
 import { useProjectsState } from './projects/useProjectsState';
 import { useProjectsAPI } from './projects/useProjectsAPI';
 import { useProjectsFilters } from './projects/useProjectsFilters';
