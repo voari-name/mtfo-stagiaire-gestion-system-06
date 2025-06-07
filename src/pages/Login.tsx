@@ -6,15 +6,71 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import axios from "axios";
+
+const API_URL = 'http://localhost:5000/api';
 
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [initializing, setInitializing] = useState(true);
   const navigate = useNavigate();
   const { login, loading, error, user } = useAuth();
+  const { toast } = useToast();
+
+  // Créer un utilisateur admin par défaut au démarrage
+  useEffect(() => {
+    const initializeAdmin = async () => {
+      try {
+        console.log("Vérification de la connexion au serveur...");
+        
+        // Vérifier la connexion au serveur
+        await axios.get(`${API_URL}/users/profile`).catch(() => {
+          // C'est normal que cette requête échoue si on n'est pas connecté
+        });
+        
+        // Créer l'utilisateur admin par défaut
+        try {
+          console.log("Création de l'utilisateur admin...");
+          await axios.post(`${API_URL}/users/register`, {
+            username: "RAHAJANIAINA",
+            password: "Olivier",
+            firstName: "Olivier",
+            lastName: "RAHAJANIAINA", 
+            email: "admin@mtfop.mg",
+            role: "admin"
+          });
+          console.log("Utilisateur admin créé avec succès");
+          toast({
+            title: "Initialisation",
+            description: "Utilisateur admin créé avec succès",
+          });
+        } catch (err: any) {
+          if (err.response?.status === 400 && err.response?.data?.message?.includes('déjà utilisé')) {
+            console.log("L'utilisateur admin existe déjà");
+          } else {
+            console.error("Erreur lors de la création de l'admin:", err);
+          }
+        }
+      } catch (err) {
+        console.error("Erreur de connexion au serveur:", err);
+        toast({
+          title: "Erreur de connexion",
+          description: "Vérifiez que le serveur backend est démarré sur le port 5000",
+          variant: "destructive"
+        });
+      } finally {
+        setInitializing(false);
+      }
+    };
+    
+    initializeAdmin();
+  }, [toast]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Tentative de connexion avec:", username);
     const success = await login(username, password);
     if (success) {
       navigate("/profile");
@@ -74,6 +130,11 @@ const Login = () => {
             <CardDescription className="text-center animate-fade-in" style={{animationDelay: '0.2s'}}>
               Entrez vos identifiants pour accéder à la plateforme
             </CardDescription>
+            {initializing && (
+              <div className="animate-pulse text-center text-sm text-blue-600 mt-2">
+                Initialisation en cours...
+              </div>
+            )}
           </CardHeader>
           <form onSubmit={handleLogin}>
             <CardContent className="space-y-4 animate-fade-in" style={{animationDelay: '0.4s'}}>
@@ -86,7 +147,7 @@ const Login = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   required
                   className="transition-all duration-300 focus:scale-105"
-                  disabled={loading}
+                  disabled={loading || initializing}
                 />
               </div>
               <div className="space-y-2">
@@ -99,7 +160,7 @@ const Login = () => {
                   onChange={(e) => setPassword(e.target.value)}
                   required
                   className="transition-all duration-300 focus:scale-105"
-                  disabled={loading}
+                  disabled={loading || initializing}
                 />
               </div>
               {error && (
@@ -112,7 +173,7 @@ const Login = () => {
               <Button 
                 type="submit" 
                 className="w-full bg-blue-800 hover:bg-blue-900 hover-scale transition-all duration-300"
-                disabled={loading}
+                disabled={loading || initializing}
               >
                 {loading ? 'Connexion en cours...' : 'Se connecter'}
               </Button>

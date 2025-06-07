@@ -43,16 +43,20 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   useEffect(() => {
     const checkAuth = async () => {
       try {
+        console.log("Vérification de l'authentification...");
         const response = await axios.get(`${API_URL}/users/profile`);
         
         if (response.data.success) {
+          console.log("Utilisateur connecté:", response.data.user);
           setUser(response.data.user);
           setIsAuthenticated(true);
         } else {
+          console.log("Aucun utilisateur connecté");
           setUser(null);
           setIsAuthenticated(false);
         }
-      } catch (err) {
+      } catch (err: any) {
+        console.log("Pas d'utilisateur connecté:", err.response?.status);
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -68,11 +72,16 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     try {
       setLoading(true);
       setError(null);
+      
+      console.log("Tentative de connexion vers:", `${API_URL}/users/login`);
+      console.log("Données envoyées:", { username, password: "***" });
 
       const response = await axios.post(`${API_URL}/users/login`, {
         username,
         password
       });
+
+      console.log("Réponse du serveur:", response.data);
 
       if (response.data.success) {
         setUser(response.data.user);
@@ -88,7 +97,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         throw new Error(response.data.message || 'Échec de la connexion');
       }
     } catch (err: any) {
-      const errorMessage = err.response?.data?.message || err.message || 'Erreur lors de la connexion';
+      console.error("Erreur de connexion:", err);
+      console.error("Détails de l'erreur:", err.response?.data);
+      
+      let errorMessage = 'Erreur lors de la connexion';
+      
+      if (err.code === 'ERR_NETWORK') {
+        errorMessage = 'Erreur réseau: Vérifiez que le serveur backend est démarré sur le port 5000';
+      } else if (err.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (err.message) {
+        errorMessage = err.message;
+      }
+      
       setError(errorMessage);
       setIsAuthenticated(false);
       
