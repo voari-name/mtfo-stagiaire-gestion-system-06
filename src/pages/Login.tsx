@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -9,7 +8,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import axios from "axios";
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const Login = () => {
   const [username, setUsername] = useState("");
@@ -24,6 +23,7 @@ const Login = () => {
     const initializeAdmin = async () => {
       try {
         console.log("Vérification de la connexion au serveur...");
+        console.log("API URL utilisé:", API_URL);
         
         // Vérifier la connexion au serveur
         await axios.get(`${API_URL}/users/profile`).catch(() => {
@@ -53,13 +53,15 @@ const Login = () => {
             console.error("Erreur lors de la création de l'admin:", err);
           }
         }
-      } catch (err) {
+      } catch (err: any) {
         console.error("Erreur de connexion au serveur:", err);
-        toast({
-          title: "Erreur de connexion",
-          description: "Vérifiez que le serveur backend est démarré sur le port 5000",
-          variant: "destructive"
-        });
+        if (err.code === 'ERR_NETWORK') {
+          toast({
+            title: "Erreur de connexion",
+            description: `Vérifiez que le serveur backend est démarré sur ${API_URL}`,
+            variant: "destructive"
+          });
+        }
       } finally {
         setInitializing(false);
       }

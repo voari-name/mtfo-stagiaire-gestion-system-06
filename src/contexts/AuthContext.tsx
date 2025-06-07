@@ -1,10 +1,9 @@
-
 import React, { createContext, useState, useContext, ReactNode, useEffect } from 'react';
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export interface User {
   id: string;
@@ -44,6 +43,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     const checkAuth = async () => {
       try {
         console.log("Vérification de l'authentification...");
+        console.log("API URL utilisé:", API_URL);
         const response = await axios.get(`${API_URL}/users/profile`);
         
         if (response.data.success) {
@@ -57,6 +57,10 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         }
       } catch (err: any) {
         console.log("Pas d'utilisateur connecté:", err.response?.status);
+        if (err.code === 'ERR_NETWORK') {
+          console.error("ERREUR RÉSEAU: Le serveur backend n'est pas accessible sur", API_URL);
+          console.error("Vérifiez que le serveur backend est démarré avec 'npm run dev'");
+        }
         setUser(null);
         setIsAuthenticated(false);
       } finally {
@@ -67,7 +71,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     checkAuth();
   }, []);
 
-  // Fonction de connexion
   const login = async (username: string, password: string): Promise<boolean> => {
     try {
       setLoading(true);
@@ -103,7 +106,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       let errorMessage = 'Erreur lors de la connexion';
       
       if (err.code === 'ERR_NETWORK') {
-        errorMessage = 'Erreur réseau: Vérifiez que le serveur backend est démarré sur le port 5000';
+        errorMessage = `Erreur réseau: Vérifiez que le serveur backend est démarré sur ${API_URL}`;
       } else if (err.response?.data?.message) {
         errorMessage = err.response.data.message;
       } else if (err.message) {
@@ -125,7 +128,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Fonction de déconnexion
   const logout = async (): Promise<void> => {
     try {
       setLoading(true);
@@ -147,7 +149,6 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }
   };
 
-  // Fonction pour mettre à jour le profil
   const updateProfile = async (userData: Partial<User>): Promise<boolean> => {
     try {
       setLoading(true);

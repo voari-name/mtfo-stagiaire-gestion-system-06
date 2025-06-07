@@ -1,9 +1,8 @@
-
 import axios from 'axios';
 import { useToast } from '@/hooks/use-toast';
 import type { Project } from '@/types/dataTypes';
 
-const API_URL = 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 export const useProjectsAPI = (
   setProjects: React.Dispatch<React.SetStateAction<Project[]>>,
