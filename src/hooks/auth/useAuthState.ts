@@ -16,6 +16,11 @@ export const useAuthState = () => {
       try {
         console.log("Vérification de l'authentification...");
         console.log("API URL utilisé:", API_URL);
+        
+        // Test de connectivité d'abord
+        const healthResponse = await axios.get(`${API_URL}/health`);
+        console.log("Serveur accessible:", healthResponse.data);
+        
         const response = await axios.get(`${API_URL}/users/profile`);
         
         if (response.data.success) {
@@ -29,10 +34,18 @@ export const useAuthState = () => {
         }
       } catch (err: any) {
         console.log("Pas d'utilisateur connecté:", err.response?.status);
+        
         if (err.code === 'ERR_NETWORK') {
-          console.error("ERREUR RÉSEAU: Le serveur backend n'est pas accessible sur", API_URL);
-          console.error("Vérifiez que le serveur backend est démarré avec 'npm run dev'");
+          console.error("ERREUR RÉSEAU: Le serveur backend n'est pas accessible");
+          console.error("URL tentée:", API_URL);
+          console.error("Vérifiez que:");
+          console.error("1. Le serveur backend est démarré");
+          console.error("2. MongoDB est accessible");
+          console.error("3. Les variables d'environnement sont correctes");
+          
+          setError("Serveur non accessible. Vérifiez la connexion.");
         }
+        
         setUser(null);
         setIsAuthenticated(false);
       } finally {
