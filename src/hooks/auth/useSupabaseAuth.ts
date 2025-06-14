@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from 'react';
 import { User, Session } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
@@ -68,6 +67,8 @@ export const useSupabaseAuth = () => {
       
       if (err.message?.includes('Invalid login credentials')) {
         errorMessage = 'Email ou mot de passe incorrect';
+      } else if (err.message?.includes('Email not confirmed')) {
+        errorMessage = 'Mila manamarina ny mailakao aloha ianao vao afaka miditra. Jereo ny boaty fandraisanao mailaka (inbox).';
       } else if (err.message) {
         errorMessage = err.message;
       }
