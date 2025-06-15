@@ -8,7 +8,7 @@ interface ProjectsListSectionProps {
   calculateProgress: (tasks: any[]) => number;
   onViewDetails: (project: Project) => void;
   onEditProject: (project: Project) => void;
-  onDeleteProject: (projectId: number) => void;
+  onDeleteProject: (projectId: string) => void;
   translations: Record<string, string>;
 }
 

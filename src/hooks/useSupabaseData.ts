@@ -54,7 +54,7 @@ export const useSupabaseData = () => {
   }, []);
 
   // Intern operations
-  const addIntern = async (internData: Omit<Intern, 'id' | 'created_at' | 'updated_at'>) => {
+  const addIntern = async (internData: TablesInsert<'interns'>) => {
     try {
       const { data, error } = await supabase
         .from('interns')
@@ -134,7 +134,7 @@ export const useSupabaseData = () => {
   };
 
   // Project operations
-  const addProject = async (projectData: Omit<Project, 'id' | 'created_at' | 'updated_at'>) => {
+  const addProject = async (projectData: TablesInsert<'projects'>) => {
     try {
       const { data, error } = await supabase
         .from('projects')
@@ -150,6 +150,7 @@ export const useSupabaseData = () => {
           title: "Projet ajouté",
           description: "Le projet a été créé avec succès",
         });
+        return data;
       }
     } catch (error: any) {
       console.error('Error adding project:', error);

@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { triggerNotification } from "@/utils/notifications";
@@ -8,7 +7,7 @@ interface InternsContextType {
   interns: Intern[];
   addIntern: (intern: Intern) => void;
   updateIntern: (intern: Intern) => void;
-  deleteIntern: (id: number) => void;
+  deleteIntern: (id: string) => void;
   getCompletedInterns: () => Intern[];
 }
 
@@ -62,7 +61,7 @@ export const InternsProvider: React.FC<{ children: ReactNode }> = ({ children })
     });
   };
 
-  const deleteIntern = (id: number) => {
+  const deleteIntern = (id: string) => {
     const intern = interns.find(i => i.id === id);
     setInterns(prev => prev.filter(intern => intern.id !== id));
     toast({

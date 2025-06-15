@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { useDataContext } from "@/contexts/DataContext";
@@ -7,7 +6,7 @@ import InternsHeader from "@/components/internships/InternsHeader";
 import InternsTabs from "@/components/internships/InternsTabs";
 import InternForm from "@/components/internships/InternForm";
 import InternEditForm from "@/components/internships/InternEditForm";
-import type { Intern } from "@/contexts/DataContext";
+import type { Intern } from "@/types/dataTypes";
 
 const Internships = () => {
   const { interns, addIntern, updateIntern, deleteIntern, loading } = useDataContext();

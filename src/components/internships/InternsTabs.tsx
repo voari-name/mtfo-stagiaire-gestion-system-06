@@ -2,13 +2,13 @@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useSettings } from "@/contexts/SettingsContext";
 import InternCard from "./InternCard";
-import type { Intern } from "@/contexts/DataContext";
+import type { Intern } from "@/types/dataTypes";
 
 interface InternsTabsProps {
   filteredInterns: Intern[];
   searchTerm: string;
   onEditIntern: (intern: Intern) => void;
-  onDeleteIntern: (id: number) => void;
+  onDeleteIntern: (id: string) => void;
 }
 
 const InternsTabs = ({ filteredInterns, searchTerm, onEditIntern, onDeleteIntern }: InternsTabsProps) => {

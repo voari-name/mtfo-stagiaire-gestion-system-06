@@ -1,9 +1,8 @@
-
 import type { Project } from '@/types/dataTypes';
 
 export const useProjectsUtils = (projects: Project[]) => {
   // Obtenir un projet par ID
-  const getProjectById = (id: number): Project | undefined => {
+  const getProjectById = (id: string): Project | undefined => {
     return projects.find(project => project.id === id);
   };
 
@@ -53,7 +52,7 @@ export const useProjectsUtils = (projects: Project[]) => {
   const duplicateProject = async (project: Project, addProject: (project: Project) => Promise<boolean>) => {
     const duplicatedProject: Project = {
       ...project,
-      id: Date.now() + Math.random(),
+      id: crypto.randomUUID(),
       title: `${project.title} (Copie)`,
       tasks: project.tasks.map(task => ({
         ...task,

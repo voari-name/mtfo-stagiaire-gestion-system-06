@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -9,12 +8,12 @@ import { User, Calendar, Mail, BookOpen, Star, UserCircle, Sparkles, GraduationC
 import { useToast } from "@/hooks/use-toast";
 import { useSettings } from "@/contexts/SettingsContext";
 import PhotoUpload from "@/components/PhotoUpload";
-import type { Intern } from "@/contexts/DataContext";
+import type { Intern } from "@/types/dataTypes";
 
 interface InternFormProps {
   isOpen: boolean;
   onClose: () => void;
-  onSubmit: (intern: Intern) => void;
+  onSubmit: (intern: Omit<Intern, 'id'>) => void;
 }
 
 const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
@@ -105,7 +104,6 @@ const InternForm = ({ isOpen, onClose, onSubmit }: InternFormProps) => {
     }
 
     const newIntern = {
-      id: Date.now(),
       firstName: formData.firstName.trim(),
       lastName: formData.lastName.trim(),
       title: formData.title.trim(),

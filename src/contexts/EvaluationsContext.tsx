@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode, useState } from "react";
 import { useToast } from "@/hooks/use-toast";
 import { triggerNotification } from "@/utils/notifications";
@@ -8,7 +7,7 @@ interface EvaluationsContextType {
   evaluations: EvaluationType[];
   addEvaluation: (evaluation: EvaluationType) => void;
   updateEvaluation: (evaluation: EvaluationType) => void;
-  deleteEvaluation: (id: number) => void;
+  deleteEvaluation: (id: string) => void;
 }
 
 const EvaluationsContext = createContext<EvaluationsContextType | undefined>(undefined);
@@ -44,7 +43,7 @@ export const EvaluationsProvider: React.FC<{ children: ReactNode }> = ({ childre
     });
   };
 
-  const deleteEvaluation = (id: number) => {
+  const deleteEvaluation = (id: string) => {
     const evaluation = evaluations.find(e => e.id === id);
     setEvaluations(prev => prev.filter(evaluation => evaluation.id !== id));
     toast({

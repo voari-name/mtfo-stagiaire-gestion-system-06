@@ -9,7 +9,7 @@ export type { Intern, Task, ProjectIntern, Project, EvaluationType };
 
 interface DataContextType {
   interns: Intern[];
-  addIntern: (intern: Omit<TablesInsert<'interns'>, 'id' | 'created_at' | 'updated_at'> & { email: string }) => Promise<void>;
+  addIntern: (intern: Omit<Intern, 'id'>) => Promise<void>;
   updateIntern: (intern: Intern) => Promise<void>;
   deleteIntern: (id: string) => Promise<void>;
   getCompletedInterns: () => Intern[];
@@ -21,7 +21,7 @@ interface DataContextType {
   
   evaluations: EvaluationType[];
   addEvaluation: (evaluation: any) => void;
-  updateEvaluation: (evaluation: any) => void;
+  updateEvaluation: (id: string, evaluation: Partial<EvaluationType>) => void;
   deleteEvaluation: (id: string) => void;
 
   loading: boolean;
@@ -57,7 +57,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
           description: project.description || undefined,
           startDate: project.start_date,
           endDate: project.end_date,
-          tasks: (project.tasks as Task[]) || [],
+          tasks: (project.tasks as unknown as Task[]) || [],
           interns: projectInternsData,
         };
       });
@@ -92,9 +92,17 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     }))
   }, [supabaseData.evaluations]);
 
-  const addIntern = async (newIntern: Omit<TablesInsert<'interns'>, 'id' | 'created_at' | 'updated_at'> & { email: string }) => {
+  const addIntern = async (newIntern: Omit<Intern, 'id'>) => {
     // email is not part of interns table, so we omit it.
-    const { email, ...internData } = newIntern;
+    const { firstName, lastName, startDate, endDate, email, ...rest } = newIntern;
+    const internData: TablesInsert<'interns'> = {
+      ...rest,
+      first_name: firstName,
+      last_name: lastName,
+      start_date: startDate,
+      end_date: endDate,
+      gender: rest.gender || 'Masculin',
+    };
     await supabaseData.addIntern(internData);
   };
   
@@ -108,6 +116,15 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       end_date: endDate,
     };
     await supabaseData.updateIntern(id, updates);
+  };
+
+  const updateEvaluation = (id: string, evaluation: Partial<EvaluationType>) => {
+    const { firstName, lastName, comment, ...rest } = evaluation;
+    const updates: Partial<TablesUpdate<'evaluations'>> = { ...rest };
+    if (firstName) updates.first_name = firstName;
+    if (lastName) updates.last_name = lastName;
+    if (comment) updates.comments = comment;
+    supabaseData.updateEvaluation(id, updates);
   };
 
   const value: DataContextType = {
@@ -125,7 +142,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     
     evaluations: mappedEvaluations,
     addEvaluation: supabaseData.addEvaluation,
-    updateEvaluation: supabaseData.updateEvaluation,
+    updateEvaluation,
     deleteEvaluation: supabaseData.deleteEvaluation,
   };
 
