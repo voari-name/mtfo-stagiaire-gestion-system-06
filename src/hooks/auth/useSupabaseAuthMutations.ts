@@ -221,6 +221,71 @@ export const useSupabaseAuthMutations = () => {
     }
   };
 
+  const resetPasswordForEmail = async (email: string): Promise<boolean> => {
+    try {
+      setOperationsLoading(true);
+      setError(null);
+
+      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+        redirectTo: `${window.location.origin}/update-password`,
+      });
+
+      if (error) {
+        throw error;
+      }
+
+      toast({
+        title: "Mail de réinitialisation envoyé",
+        description: "Vérifiez votre email pour réinitialiser votre mot de passe.",
+      });
+      return true;
+    } catch (err: any) {
+      console.error("Erreur lors de l'envoi du mail de réinitialisation:", err);
+      const errorMessage = err.message || "Erreur lors de l'envoi de l'email";
+      setError(errorMessage);
+      toast({
+        title: "Erreur",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setOperationsLoading(false);
+    }
+  };
+
+  const updateUserPassword = async (password: string): Promise<boolean> => {
+    try {
+      setOperationsLoading(true);
+      setError(null);
+      
+      const { data, error } = await supabase.auth.updateUser({ password: password });
+
+      if (error) {
+        throw error;
+      }
+      
+      toast({
+        title: "Mot de passe mis à jour",
+        description: "Votre mot de passe a été mis à jour avec succès.",
+      });
+
+      return true;
+    } catch (err: any) {
+      console.error('Erreur lors de la mise à jour du mot de passe:', err);
+      const errorMessage = err.message || 'Erreur lors de la mise à jour du mot de passe';
+      setError(errorMessage);
+      toast({
+        title: "Erreur",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setOperationsLoading(false);
+    }
+  };
+
 
   return {
     login,
@@ -228,6 +293,8 @@ export const useSupabaseAuthMutations = () => {
     logout,
     updateProfile,
     resendConfirmationEmail,
+    resetPasswordForEmail,
+    updateUserPassword,
     loading: operationsLoading,
     error,
     setError,

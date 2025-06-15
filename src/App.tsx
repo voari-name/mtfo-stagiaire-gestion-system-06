@@ -5,6 +5,7 @@ import { SettingsProvider } from '@/contexts/SettingsContext';
 import { SupabaseAuthProvider } from '@/contexts/SupabaseAuthContext';
 import Index from '@/pages/Index';
 import SupabaseLogin from '@/pages/SupabaseLogin';
+import UpdatePassword from '@/pages/UpdatePassword';
 import Dashboard from '@/pages/Dashboard';
 import Projects from '@/pages/Projects';
 import Internships from '@/pages/Internships';
@@ -26,6 +27,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Index />} />
               <Route path="/auth" element={<SupabaseLogin />} />
+              <Route path="/update-password" element={<UpdatePassword />} />
               
               {/* Redirect old login route to new auth route */}
               <Route path="/login" element={<Navigate to="/auth" replace />} />

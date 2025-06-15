@@ -14,6 +14,8 @@ interface SupabaseAuthContextType {
   logout: () => Promise<void>;
   updateProfile: (userData: any) => Promise<boolean>;
   resendConfirmationEmail: (email: string) => Promise<boolean>;
+  resetPasswordForEmail: (email: string) => Promise<boolean>;
+  updateUserPassword: (password: string) => Promise<boolean>;
 }
 
 const SupabaseAuthContext = createContext<SupabaseAuthContextType | undefined>(undefined);
