@@ -14,7 +14,7 @@ type MainLayoutProps = {
 const MainLayout = ({ 
   children, 
   title, 
-  currentPage = "dashboard",
+  currentPage = "profile",
   username = ""
 }: MainLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);

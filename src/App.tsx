@@ -7,7 +7,6 @@ import { DataProvider } from '@/contexts/DataContext';
 import Index from '@/pages/Index';
 import SupabaseLogin from '@/pages/SupabaseLogin';
 import UpdatePassword from '@/pages/UpdatePassword';
-import Dashboard from '@/pages/Dashboard';
 import Projects from '@/pages/Projects';
 import Internships from '@/pages/Internships';
 import Evaluations from '@/pages/Evaluations';
@@ -33,11 +32,7 @@ function App() {
                 {/* Redirect old login route to new auth route */}
                 <Route path="/login" element={<Navigate to="/auth" replace />} />
                 
-                <Route path="/dashboard" element={
-                  <SupabaseProtectedRoute>
-                    <Dashboard />
-                  </SupabaseProtectedRoute>
-                } />
+                <Route path="/dashboard" element={<Navigate to="/profile" replace />} />
                 
                 <Route path="/projects" element={
                   <SupabaseProtectedRoute>
