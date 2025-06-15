@@ -8,6 +8,7 @@ interface SupabaseAuthContextType {
   session: Session | null;
   loading: boolean;
   error: string | null;
+  setError: (error: string | null) => void;
   isAuthenticated: boolean;
   login: (loginIdentifier: string, password: string) => Promise<boolean>;
   signup: (email: string, password: string, userData?: any) => Promise<boolean>;

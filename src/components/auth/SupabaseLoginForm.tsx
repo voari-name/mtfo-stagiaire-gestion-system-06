@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -14,9 +15,14 @@ const SupabaseLoginForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
-  const { login, signup, loading, error, resetPasswordForEmail, resendConfirmationEmail } = useSupabaseAuthContext();
+  const { login, signup, loading, error, resetPasswordForEmail, resendConfirmationEmail, setError } = useSupabaseAuthContext();
   const { toast } = useToast();
   const navigate = useNavigate();
+
+  const setViewAndClearError = (v: 'login' | 'signup' | 'forgot_password') => {
+    setError(null);
+    setView(v);
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,7 +81,7 @@ const SupabaseLoginForm = () => {
           <Label htmlFor="password">Mot de passe</Label>
           <Input id="password" type="password" placeholder="Entrez votre mot de passe" value={password} onChange={(e) => setPassword(e.target.value)} required className="transition-all duration-300 focus:scale-105" disabled={loading} />
           <div className="text-right text-sm">
-            <Button type="button" variant="link" className="p-0 h-auto font-normal" onClick={() => setView('forgot_password')}>Mot de passe oublié ?</Button>
+            <Button type="button" variant="link" className="p-0 h-auto font-normal" onClick={() => setViewAndClearError('forgot_password')}>Mot de passe oublié ?</Button>
           </div>
         </div>
         {error && (
@@ -167,8 +173,8 @@ const SupabaseLoginForm = () => {
       </CardHeader>
       
       <div className="grid w-full grid-cols-2 p-4">
-        <Button variant={view === 'login' || view === 'forgot_password' ? 'default' : 'ghost'} onClick={() => setView('login')} className="rounded-r-none">Connexion</Button>
-        <Button variant={view === 'signup' ? 'default' : 'ghost'} onClick={() => setView('signup')} className="rounded-l-none">Inscription</Button>
+        <Button variant={view === 'login' || view === 'forgot_password' ? 'default' : 'ghost'} onClick={() => setViewAndClearError('login')} className="rounded-r-none">Connexion</Button>
+        <Button variant={view === 'signup' ? 'default' : 'ghost'} onClick={() => setViewAndClearError('signup')} className="rounded-l-none">Inscription</Button>
       </div>
 
       {view === 'login' && renderLogin()}
@@ -177,7 +183,7 @@ const SupabaseLoginForm = () => {
 
       {(view === 'forgot_password' || view === 'signup') && (
         <div className="p-4 pt-0 text-center">
-          <Button variant="link" onClick={() => setView('login')}>Retour à la connexion</Button>
+          <Button variant="link" onClick={() => setViewAndClearError('login')}>Retour à la connexion</Button>
         </div>
       )}
     </Card>

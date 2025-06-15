@@ -32,6 +32,7 @@ export const useSupabaseAuth = () => {
     session,
     loading: authStateLoading || operationsLoading,
     error,
+    setError,
     isAuthenticated: !!user,
     login,
     signup,
