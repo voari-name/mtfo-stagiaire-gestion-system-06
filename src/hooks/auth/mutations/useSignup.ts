@@ -33,7 +33,7 @@ export const useSignup = ({ setLoading, setError }: UseSignupProps) => {
       if (data.user) {
         toast({
           title: "Inscription réussie",
-          description: "Afaka miditra ianao izao.",
+          description: "Vérifiez votre email pour confirmer votre compte",
         });
         return true;
       }

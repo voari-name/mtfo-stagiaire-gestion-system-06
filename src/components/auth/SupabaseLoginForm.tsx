@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +14,7 @@ const SupabaseLoginForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
-  const { login, signup, loading, error, resetPasswordForEmail } = useSupabaseAuthContext();
+  const { login, signup, loading, error, resetPasswordForEmail, resendConfirmationEmail } = useSupabaseAuthContext();
   const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -28,6 +29,25 @@ const SupabaseLoginForm = () => {
       first_name: firstName,
       last_name: lastName
     });
+  };
+
+  const handleResendConfirmation = async () => {
+    if (error) {
+      const emailMatch = error.match(/\(([^)]+)\)/);
+      const emailToResend = emailMatch ? emailMatch[1] : email;
+
+      if (emailToResend) {
+        const success = await resendConfirmationEmail(emailToResend);
+        if (success) {
+            toast({
+                title: "Mailaka nalefa",
+                description: "Nalefa indray ny mailaka fanamarinana. Jereo ny boaty fandraisanao."
+            });
+        }
+      } else {
+        toast({ title: "Erreur", description: "Impossible de trouver l'email à utiliser pour le renvoi.", variant: "destructive" });
+      }
+    }
   };
   
   const handlePasswordResetRequest = async (e: React.FormEvent) => {
@@ -59,7 +79,12 @@ const SupabaseLoginForm = () => {
         </div>
         {error && (
           <div className="bg-red-50 text-red-700 px-4 py-2 rounded-md text-sm animate-fade-in">
-            <p>{error}</p>
+            <p>{error.split('(')[0].trim()}</p>
+            {error.includes("manamarina ny mailakao") && (
+              <Button variant="link" type="button" onClick={handleResendConfirmation} disabled={loading} className="p-0 h-auto mt-2 text-red-700 font-bold hover:underline">
+                {loading ? "Mandefa..." : "Alefaso indray ny mailaka fanamarinana"}
+              </Button>
+            )}
           </div>
         )}
       </CardContent>
