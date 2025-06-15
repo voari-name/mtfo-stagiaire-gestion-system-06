@@ -1,5 +1,5 @@
 
-import { EvaluationType } from "@/types/evaluations";
+import { EvaluationType } from "@/types/dataTypes";
 import EvaluationCard from "@/components/evaluations/EvaluationCard";
 import EditEvaluationDialog from "@/components/evaluations/EditEvaluationDialog";
 
@@ -9,11 +9,11 @@ interface EvaluationDetailsViewProps {
   isEditDialogOpen: boolean;
   setIsEditDialogOpen: (open: boolean) => void;
   onEdit: (evaluation: EvaluationType) => void;
-  onDelete: (id: number) => void;
-  onGeneratePdf: (id: number) => void;
+  onDelete: (id: string) => void;
+  onGeneratePdf: (id: string) => void;
   onBack: () => void;
   onSave: () => void;
-  onInputChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onInputChange: (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void;
 }
 
 const EvaluationDetailsView = ({

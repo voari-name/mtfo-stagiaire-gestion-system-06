@@ -1,15 +1,14 @@
-
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
-import { EvaluationType } from "@/types/evaluations";
+import { EvaluationType } from "@/types/dataTypes";
 import { FileText, Edit3, Trash2, ArrowLeft } from "lucide-react";
 
 interface EvaluationCardProps {
   evaluation: EvaluationType;
   onEdit: (evaluation: EvaluationType) => void;
-  onDelete: (id: number) => void;
-  onGeneratePdf: (id: number) => void;
+  onDelete: (id: string) => void;
+  onGeneratePdf: (id: string) => void;
   onCancel?: () => void;
   showCancelButton?: boolean;
 }

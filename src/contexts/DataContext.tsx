@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, ReactNode, useState, useEffect, useMemo } from "react";
 import { useSupabaseData } from "@/hooks/useSupabaseData";
 import type { Intern, Project, EvaluationType, Task, ProjectIntern } from "@/types/dataTypes";
@@ -20,7 +19,7 @@ interface DataContextType {
   deleteProject: (id: string) => Promise<void>;
   
   evaluations: EvaluationType[];
-  addEvaluation: (evaluation: any) => void;
+  addEvaluation: (evaluation: Omit<EvaluationType, 'id'>) => void;
   updateEvaluation: (id: string, evaluation: Partial<EvaluationType>) => void;
   deleteEvaluation: (id: string) => void;
 
@@ -118,8 +117,20 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     await supabaseData.updateIntern(id, updates);
   };
 
+  const addEvaluation = (evaluation: Omit<EvaluationType, 'id'>) => {
+    const { firstName, lastName, comment, grade } = evaluation;
+    const evaluationData: Omit<Tables<'evaluations'>, 'id' | 'created_at' | 'updated_at' | 'user_id'> & { user_id: string | null } = {
+      first_name: firstName,
+      last_name: lastName,
+      comments: comment,
+      grade: grade,
+      user_id: null, // Or get current user id
+    };
+    supabaseData.addEvaluation(evaluationData);
+  };
+
   const updateEvaluation = (id: string, evaluation: Partial<EvaluationType>) => {
-    const { firstName, lastName, comment, ...rest } = evaluation;
+    const { firstName, lastName, comment, startDate, endDate, ...rest } = evaluation;
     const updates: Partial<TablesUpdate<'evaluations'>> = { ...rest };
     if (firstName) updates.first_name = firstName;
     if (lastName) updates.last_name = lastName;
@@ -141,7 +152,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     deleteProject: supabaseData.deleteProject,
     
     evaluations: mappedEvaluations,
-    addEvaluation: supabaseData.addEvaluation,
+    addEvaluation,
     updateEvaluation,
     deleteEvaluation: supabaseData.deleteEvaluation,
   };

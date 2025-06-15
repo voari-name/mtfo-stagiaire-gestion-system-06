@@ -3,7 +3,7 @@ import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { useEvaluations } from "@/hooks/useEvaluations";
 import { useDataContext } from "@/contexts/DataContext";
-import { EvaluationType } from "@/types/evaluations";
+import { EvaluationType } from "@/types/dataTypes";
 import { useSettings } from "@/contexts/SettingsContext";
 import EvaluationsHeader from "@/components/evaluations/EvaluationsHeader";
 import CompletedInternsSection from "@/components/evaluations/CompletedInternsSection";
@@ -30,8 +30,7 @@ const Evaluations = () => {
   const [selectedEvaluation, setSelectedEvaluation] = useState<EvaluationType | null>(null);
 
   const handleCreateEvaluationFromIntern = (intern: any) => {
-    const newEvaluation: EvaluationType = {
-      id: Date.now(),
+    const newEvaluation: Omit<EvaluationType, 'id'> = {
       firstName: intern.firstName,
       lastName: intern.lastName,
       startDate: intern.startDate,

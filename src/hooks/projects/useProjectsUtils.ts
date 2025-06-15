@@ -49,10 +49,9 @@ export const useProjectsUtils = (projects: Project[]) => {
   };
 
   // Dupliquer un projet
-  const duplicateProject = async (project: Project, addProject: (project: Project) => Promise<boolean>) => {
-    const duplicatedProject: Project = {
+  const duplicateProject = async (project: Project, addProject: (project: Omit<Project, 'id' | 'interns' | 'tasks'>) => Promise<any>) => {
+    const duplicatedProjectData = {
       ...project,
-      id: crypto.randomUUID(),
       title: `${project.title} (Copie)`,
       tasks: project.tasks.map(task => ({
         ...task,
@@ -60,8 +59,10 @@ export const useProjectsUtils = (projects: Project[]) => {
       }))
     };
     
-    const success = await addProject(duplicatedProject);
-    return success ? duplicatedProject : null;
+    const { id, interns, tasks, ...rest } = duplicatedProjectData;
+
+    const success = await addProject(rest);
+    return success ? duplicatedProjectData : null;
   };
 
   return {

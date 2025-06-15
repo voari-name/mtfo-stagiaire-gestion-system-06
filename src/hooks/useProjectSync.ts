@@ -20,8 +20,8 @@ export const useProjectSync = () => {
 
       if (!existingProject && intern.status === "fin") {
         // Créer un nouveau projet pour ce stagiaire terminé
-        const newProject: Project = {
-          id: Date.now() + Math.random(),
+        const newProject: Omit<Project, 'status'> = {
+          id: crypto.randomUUID(),
           title: intern.title,
           startDate: intern.startDate,
           endDate: intern.endDate,

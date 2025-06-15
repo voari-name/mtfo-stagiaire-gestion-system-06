@@ -1,17 +1,17 @@
 
 import { useToast } from "@/hooks/use-toast";
-import { EvaluationType } from "@/types/evaluations";
+import { EvaluationType } from "@/types/dataTypes";
 import { generateEvaluationPDF } from "@/utils/evaluationPdfGenerator";
-import { useEvaluationsContext } from "@/contexts/EvaluationsContext";
+import { useDataContext } from "@/contexts/DataContext";
 import { useState } from "react";
 
 export const useEvaluations = () => {
-  const { evaluations, addEvaluation: addEvaluationToContext, updateEvaluation, deleteEvaluation } = useEvaluationsContext();
+  const { evaluations, addEvaluation: addEvaluationToContext, updateEvaluation, deleteEvaluation } = useDataContext();
   const [currentEvaluation, setCurrentEvaluation] = useState<EvaluationType | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const { toast } = useToast();
 
-  const addEvaluation = (newEvaluation: EvaluationType) => {
+  const addEvaluation = (newEvaluation: Omit<EvaluationType, 'id'>) => {
     addEvaluationToContext(newEvaluation);
   };
 
@@ -22,7 +22,7 @@ export const useEvaluations = () => {
 
   const handleSaveEvaluation = () => {
     if (currentEvaluation) {
-      updateEvaluation(currentEvaluation);
+      updateEvaluation(currentEvaluation.id, currentEvaluation);
       setIsEditDialogOpen(false);
       toast({
         title: "Évaluation mise à jour",
@@ -31,16 +31,18 @@ export const useEvaluations = () => {
     }
   };
 
-  const handleDeleteEvaluation = (id: number) => {
+  const handleDeleteEvaluation = (id: string) => {
     deleteEvaluation(id);
   };
 
-  const handleGeneratePdf = async (id: number) => {
+  const handleGeneratePdf = async (id: string) => {
     const evaluation = evaluations.find(e => e.id === id);
     if (evaluation) {
       try {
         console.log('Génération du PDF pour:', evaluation);
-        await generateEvaluationPDF(evaluation);
+        // Workaround for read-only pdf generator expecting numeric id
+        const evaluationForPdf = { ...evaluation, id: 0 };
+        await generateEvaluationPDF(evaluationForPdf as any);
         toast({
           title: "Certificat généré avec succès",
           description: `Le certificat d'évaluation pour ${evaluation.firstName} ${evaluation.lastName} a été téléchargé.`,
@@ -56,7 +58,7 @@ export const useEvaluations = () => {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target;
     if (currentEvaluation) {
       setCurrentEvaluation({

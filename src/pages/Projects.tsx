@@ -12,9 +12,10 @@ import EditProjectDialog from "@/components/projects/EditProjectDialog";
 import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Project } from "@/types/dataTypes";
+import { useDataContext } from "@/contexts/DataContext";
 
 const Projects = () => {
-  const { projects, updateProject, deleteProject } = useProjectsContext();
+  const { projects, updateProject, deleteProject } = useDataContext();
   const { translations } = useSettings();
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
@@ -48,7 +49,7 @@ const Projects = () => {
 
   const handleSaveEdit = () => {
     if (editingProject) {
-      updateProject(editingProject);
+      updateProject(editingProject.id, editingProject);
       setIsEditDialogOpen(false);
       setEditingProject(null);
       // Mettre à jour le projet sélectionné s'il correspond
@@ -58,7 +59,7 @@ const Projects = () => {
     }
   };
 
-  const handleDeleteProject = (projectId: number) => {
+  const handleDeleteProject = (projectId: string) => {
     deleteProject(projectId);
     // Si le projet supprimé était sélectionné, revenir à la liste
     if (selectedProject && selectedProject.id === projectId) {
