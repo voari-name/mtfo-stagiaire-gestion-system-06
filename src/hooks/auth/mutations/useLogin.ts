@@ -1,6 +1,7 @@
 
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useNavigate } from 'react-router-dom';
 
 type UseLoginProps = {
   setLoading: (loading: boolean) => void;
@@ -9,6 +10,7 @@ type UseLoginProps = {
 
 export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const login = async (loginIdentifier: string, password: string): Promise<boolean> => {
     let email = loginIdentifier;
@@ -52,6 +54,7 @@ export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
           title: "Connexion réussie",
           description: "Bienvenue sur la plateforme de gestion",
         });
+        navigate('/dashboard');
         return true;
       }
 
@@ -84,4 +87,3 @@ export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
   };
   return login;
 };
-

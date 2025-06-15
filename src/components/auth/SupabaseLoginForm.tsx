@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
@@ -21,10 +20,7 @@ const SupabaseLoginForm = () => {
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    const success = await login(email, password);
-    if (success) {
-      navigate('/dashboard');
-    }
+    await login(email, password);
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -189,4 +185,3 @@ const SupabaseLoginForm = () => {
 };
 
 export default SupabaseLoginForm;
-
