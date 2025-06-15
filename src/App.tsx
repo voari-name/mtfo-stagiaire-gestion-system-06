@@ -18,78 +18,83 @@ import Affectation from '@/pages/Affectation';
 import NotFound from '@/pages/NotFound';
 import SupabaseProtectedRoute from '@/components/SupabaseProtectedRoute';
 
+function MainContent() {
+  return (
+    <div className="min-h-screen bg-background">
+      <Routes>
+        <Route path="/" element={<Index />} />
+        <Route path="/auth" element={<SupabaseLogin />} />
+        
+        {/* Redirect old login route to new auth route */}
+        <Route path="/login" element={<Navigate to="/auth" replace />} />
+        
+        <Route path="/dashboard" element={
+          <SupabaseProtectedRoute>
+            <Dashboard />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="/projects" element={
+          <SupabaseProtectedRoute>
+            <Projects />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="/internships" element={
+          <SupabaseProtectedRoute>
+            <Internships />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="/evaluations" element={
+          <SupabaseProtectedRoute>
+            <Evaluations />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="/profile" element={
+          <SupabaseProtectedRoute>
+            <Profile />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="/settings" element={
+          <SupabaseProtectedRoute>
+            <Settings />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="/reports" element={
+          <SupabaseProtectedRoute>
+            <Reports />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="/statistics" element={
+          <SupabaseProtectedRoute>
+            <Statistics />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="/affectation" element={
+          <SupabaseProtectedRoute>
+            <Affectation />
+          </SupabaseProtectedRoute>
+        } />
+        
+        <Route path="*" element={<NotFound />} />
+      </Routes>
+      <Toaster />
+    </div>
+  );
+}
+
 function App() {
   return (
     <Router>
       <SupabaseAuthProvider>
         <SettingsProvider>
-          <div className="min-h-screen bg-background">
-            <Routes>
-              <Route path="/" element={<Index />} />
-              <Route path="/auth" element={<SupabaseLogin />} />
-              <Route path="/update-password" element={<UpdatePassword />} />
-              
-              {/* Redirect old login route to new auth route */}
-              <Route path="/login" element={<Navigate to="/auth" replace />} />
-              
-              <Route path="/dashboard" element={
-                <SupabaseProtectedRoute>
-                  <Dashboard />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="/projects" element={
-                <SupabaseProtectedRoute>
-                  <Projects />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="/internships" element={
-                <SupabaseProtectedRoute>
-                  <Internships />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="/evaluations" element={
-                <SupabaseProtectedRoute>
-                  <Evaluations />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="/profile" element={
-                <SupabaseProtectedRoute>
-                  <Profile />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="/settings" element={
-                <SupabaseProtectedRoute>
-                  <Settings />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="/reports" element={
-                <SupabaseProtectedRoute>
-                  <Reports />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="/statistics" element={
-                <SupabaseProtectedRoute>
-                  <Statistics />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="/affectation" element={
-                <SupabaseProtectedRoute>
-                  <Affectation />
-                </SupabaseProtectedRoute>
-              } />
-              
-              <Route path="*" element={<NotFound />} />
-            </Routes>
-            <Toaster />
-          </div>
+          <MainContent />
         </SettingsProvider>
       </SupabaseAuthProvider>
     </Router>
