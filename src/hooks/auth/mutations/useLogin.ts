@@ -43,10 +43,8 @@ export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
       
       let errorMessage = 'Erreur lors de la connexion';
       
-      if (err.message?.includes('Invalid login credentials')) {
+      if (err.message?.includes('Invalid login credentials') || err.message?.includes('Email not confirmed')) {
         errorMessage = 'Email ou mot de passe incorrect';
-      } else if (err.message?.includes('Email not confirmed')) {
-        errorMessage = `Mila manamarina ny mailakao aloha ianao vao afaka miditra. (${email}) Jereo ny boaty fandraisanao mailaka (inbox).`;
       } else if (err.message) {
         errorMessage = err.message;
       }
@@ -55,7 +53,7 @@ export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
       
       toast({
         title: "Erreur de connexion",
-        description: errorMessage.split('(')[0].trim(),
+        description: errorMessage,
         variant: "destructive"
       });
       
