@@ -1,8 +1,6 @@
-
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
 import { useSettings } from "@/contexts/SettingsContext";
-import { useInternProjectSync } from "@/hooks/useInternProjectSync";
 import ProjectsHeader from "@/components/projects/ProjectsHeader";
 import ProjectsStats from "@/components/projects/ProjectsStats";
 import ProjectsListSection from "@/components/projects/ProjectsListSection";
@@ -21,9 +19,6 @@ const Projects = () => {
   const [selectedProject, setSelectedProject] = useState<Project | null>(null);
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
   const [editingProject, setEditingProject] = useState<Project | null>(null);
-
-  // Synchroniser automatiquement les stagiaires avec les projets
-  useInternProjectSync();
 
   // Filter projects based on search term
   const filteredProjects = projects.filter(project =>
