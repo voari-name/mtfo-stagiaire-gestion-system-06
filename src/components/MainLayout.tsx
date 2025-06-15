@@ -1,9 +1,8 @@
 
 import { useState, ReactNode } from "react";
-import { useNavigate } from "react-router-dom";
-import { useToast } from "@/hooks/use-toast";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Header } from "@/components/layout/Header";
+import { useSupabaseAuthContext } from "@/contexts/SupabaseAuthContext";
 
 type MainLayoutProps = {
   children: ReactNode;
@@ -19,15 +18,10 @@ const MainLayout = ({
   username = ""
 }: MainLayoutProps) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
-  const navigate = useNavigate();
-  const { toast } = useToast();
+  const { logout } = useSupabaseAuthContext();
   
-  const handleLogout = () => {
-    toast({
-      title: "Déconnexion réussie",
-      description: "À bientôt!",
-    });
-    navigate("/");
+  const handleLogout = async () => {
+    await logout('/');
   };
 
   return (
