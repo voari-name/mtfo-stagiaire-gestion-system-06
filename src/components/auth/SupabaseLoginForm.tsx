@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -32,8 +31,15 @@ const SupabaseLoginForm = () => {
   };
   
   const handleResendConfirmation = async () => {
-    if (email) {
-      await resendConfirmationEmail(email);
+    if (error) {
+      const emailMatch = error.match(/\(([^)]+)\)/);
+      const emailToResend = emailMatch ? emailMatch[1] : email;
+
+      if (emailToResend) {
+        await resendConfirmationEmail(emailToResend);
+      } else {
+        toast({ title: "Erreur", description: "Impossible de trouver l'email à utiliser pour le renvoi.", variant: "destructive" });
+      }
     }
   };
 
@@ -54,8 +60,8 @@ const SupabaseLoginForm = () => {
     <form onSubmit={handleLogin}>
       <CardContent className="space-y-4 animate-fade-in">
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
-          <Input id="email" type="email" placeholder="Entrez votre email" value={email} onChange={(e) => setEmail(e.target.value)} required className="transition-all duration-300 focus:scale-105" disabled={loading} />
+          <Label htmlFor="email">Nom d'utilisateur ou Email</Label>
+          <Input id="email" type="text" placeholder="Entrez votre nom d'utilisateur ou email" value={email} onChange={(e) => setEmail(e.target.value)} required className="transition-all duration-300 focus:scale-105" disabled={loading} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Mot de passe</Label>
@@ -66,7 +72,7 @@ const SupabaseLoginForm = () => {
         </div>
         {error && (
           <div className="bg-red-50 text-red-700 px-4 py-2 rounded-md text-sm animate-fade-in">
-            <p>{error}</p>
+            <p>{error.split('(')[0].trim()}</p>
             {error.includes("manamarina ny mailakao") && (
               <Button variant="link" type="button" onClick={handleResendConfirmation} disabled={loading} className="p-0 h-auto mt-2 text-red-700 font-bold hover:underline">
                 {loading ? "Mandefa..." : "Alefaso indray ny mailaka fanamarinana"}

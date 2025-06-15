@@ -12,12 +12,33 @@ export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
   const { toast } = useToast();
   const navigate = useNavigate();
 
-  const login = async (email: string, password: string): Promise<boolean> => {
+  const login = async (loginIdentifier: string, password: string): Promise<boolean> => {
+    let email = loginIdentifier;
     try {
       setLoading(true);
       setError(null);
       
-      console.log("Tentative de connexion avec Supabase:", email);
+      console.log("Tentative de connexion avec:", loginIdentifier);
+      
+      if (!loginIdentifier.includes('@') && loginIdentifier) {
+        console.log("Ce n'est pas un email, on suppose que c'est un nom d'utilisateur. Appel RPC...");
+        const { data: rpcEmail, error: rpcError } = await supabase.rpc('get_email_for_username', {
+          p_username: loginIdentifier
+        });
+
+        if (rpcError) {
+          console.error("Erreur RPC get_email_for_username:", rpcError);
+          throw new Error("Erreur lors de la vérification du nom d'utilisateur.");
+        }
+
+        if (!rpcEmail) {
+          console.log("Nom d'utilisateur non trouvé:", loginIdentifier);
+          throw new Error("Invalid login credentials");
+        }
+        
+        email = rpcEmail;
+        console.log(`Email récupéré pour ${loginIdentifier}: ${email}`);
+      }
       
       const { data, error: authError } = await supabase.auth.signInWithPassword({
         email,
@@ -44,9 +65,9 @@ export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
       let errorMessage = 'Erreur lors de la connexion';
       
       if (err.message?.includes('Invalid login credentials')) {
-        errorMessage = 'Email ou mot de passe incorrect';
+        errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect';
       } else if (err.message?.includes('Email not confirmed')) {
-        errorMessage = 'Mila manamarina ny mailakao aloha ianao vao afaka miditra. Jereo ny boaty fandraisanao mailaka (inbox).';
+        errorMessage = `Mila manamarina ny mailakao aloha ianao vao afaka miditra. (${email}) Jereo ny boaty fandraisanao mailaka (inbox).`;
       } else if (err.message) {
         errorMessage = err.message;
       }
@@ -55,7 +76,7 @@ export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
       
       toast({
         title: "Erreur de connexion",
-        description: errorMessage,
+        description: errorMessage.split('(')[0].trim(),
         variant: "destructive"
       });
       
