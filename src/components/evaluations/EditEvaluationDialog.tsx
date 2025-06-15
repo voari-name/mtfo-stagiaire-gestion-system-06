@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogFooter, DialogHeader, DialogTitle, DialogD
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { EvaluationType } from "@/types/evaluations";
+import { EvaluationType } from "@/types/dataTypes";
 
 interface EditEvaluationDialogProps {
   open: boolean;

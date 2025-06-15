@@ -1,7 +1,6 @@
 
 import { useState } from "react";
 import MainLayout from "@/components/MainLayout";
-import { useProjectsContext } from "@/contexts/ProjectsContext";
 import { useSettings } from "@/contexts/SettingsContext";
 import { useInternProjectSync } from "@/hooks/useInternProjectSync";
 import ProjectsHeader from "@/components/projects/ProjectsHeader";
@@ -13,6 +12,7 @@ import { ArrowLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import type { Project } from "@/types/dataTypes";
 import { useDataContext } from "@/contexts/DataContext";
+import type { Json, TablesUpdate } from "@/integrations/supabase/types";
 
 const Projects = () => {
   const { projects, updateProject, deleteProject } = useDataContext();
@@ -49,7 +49,18 @@ const Projects = () => {
 
   const handleSaveEdit = () => {
     if (editingProject) {
-      updateProject(editingProject.id, editingProject);
+      const { id, title, startDate, endDate, description, status, tasks } = editingProject;
+      
+      const updates: Partial<TablesUpdate<'projects'>> = {
+        title,
+        start_date: startDate,
+        end_date: endDate,
+        description: description || null,
+        status: status || null,
+        tasks: tasks as unknown as Json,
+      };
+
+      updateProject(id, updates);
       setIsEditDialogOpen(false);
       setEditingProject(null);
       // Mettre à jour le projet sélectionné s'il correspond

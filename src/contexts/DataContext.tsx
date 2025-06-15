@@ -17,6 +17,7 @@ interface DataContextType {
   addProject: (project: Omit<TablesInsert<'projects'>, 'id' | 'created_at' | 'updated_at'>) => Promise<Tables<'projects'> | undefined>;
   updateProject: (id: string, updates: Partial<TablesUpdate<'projects'>>) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
+  addProjectIntern: (projectIntern: TablesInsert<'project_interns'>) => Promise<void>;
   
   evaluations: EvaluationType[];
   addEvaluation: (evaluation: Omit<EvaluationType, 'id'>) => void;
@@ -150,6 +151,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     addProject: supabaseData.addProject,
     updateProject: supabaseData.updateProject,
     deleteProject: supabaseData.deleteProject,
+    addProjectIntern: supabaseData.addProjectIntern,
     
     evaluations: mappedEvaluations,
     addEvaluation,
