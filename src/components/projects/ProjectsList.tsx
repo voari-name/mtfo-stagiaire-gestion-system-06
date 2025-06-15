@@ -9,7 +9,7 @@ interface ProjectsListProps {
   calculateProgress: (tasks: any[]) => number;
   onViewDetails: (project: Project) => void;
   onEditProject: (project: Project) => void;
-  onDeleteProject: (id: number) => void;
+  onDeleteProject: (id: string) => void;
 }
 
 const ProjectsList: React.FC<ProjectsListProps> = ({ 

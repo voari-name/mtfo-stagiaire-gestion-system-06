@@ -1,19 +1,20 @@
-
 import { useState, useEffect } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import type { Tables } from '@/integrations/supabase/types';
+import type { Tables, TablesInsert } from '@/integrations/supabase/types';
 
 type Intern = Tables<'interns'>;
 type Project = Tables<'projects'>;
 type Evaluation = Tables<'evaluations'>;
 type Profile = Tables<'profiles'>;
+type ProjectIntern = Tables<'project_interns'>;
 
 export const useSupabaseData = () => {
   const [interns, setInterns] = useState<Intern[]>([]);
   const [projects, setProjects] = useState<Project[]>([]);
   const [evaluations, setEvaluations] = useState<Evaluation[]>([]);
   const [profiles, setProfiles] = useState<Profile[]>([]);
+  const [projectInterns, setProjectInterns] = useState<ProjectIntern[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
 
@@ -22,17 +23,19 @@ export const useSupabaseData = () => {
     try {
       setLoading(true);
       
-      const [internsRes, projectsRes, evaluationsRes, profilesRes] = await Promise.all([
+      const [internsRes, projectsRes, evaluationsRes, profilesRes, projectInternsRes] = await Promise.all([
         supabase.from('interns').select('*'),
         supabase.from('projects').select('*'),
         supabase.from('evaluations').select('*'),
-        supabase.from('profiles').select('*')
+        supabase.from('profiles').select('*'),
+        supabase.from('project_interns').select('*'),
       ]);
 
       if (internsRes.data) setInterns(internsRes.data);
       if (projectsRes.data) setProjects(projectsRes.data);
       if (evaluationsRes.data) setEvaluations(evaluationsRes.data);
       if (profilesRes.data) setProfiles(profilesRes.data);
+      if (projectInternsRes.data) setProjectInterns(projectInternsRes.data);
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -290,12 +293,37 @@ export const useSupabaseData = () => {
     }
   };
 
+  // Project-Intern link operations
+  const addProjectIntern = async (projectInternData: TablesInsert<'project_interns'>) => {
+    try {
+      const { data, error } = await supabase
+        .from('project_interns')
+        .insert([projectInternData])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      if (data) {
+        setProjectInterns(prev => [...prev, data]);
+      }
+    } catch (error: any) {
+      console.error('Error adding project intern link:', error);
+      toast({
+        title: "Erreur",
+        description: error.message || "Erreur lors de la liaison projet-stagiaire",
+        variant: "destructive"
+      });
+    }
+  };
+
   return {
     // Data
     interns,
     projects,
     evaluations,
     profiles,
+    projectInterns,
     loading,
     
     // Operations
@@ -308,6 +336,7 @@ export const useSupabaseData = () => {
     addEvaluation,
     updateEvaluation,
     deleteEvaluation,
+    addProjectIntern,
     
     // Utility
     fetchData

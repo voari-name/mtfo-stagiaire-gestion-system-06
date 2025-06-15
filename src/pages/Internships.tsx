@@ -10,7 +10,7 @@ import InternEditForm from "@/components/internships/InternEditForm";
 import type { Intern } from "@/contexts/DataContext";
 
 const Internships = () => {
-  const { interns, addIntern, updateIntern, deleteIntern } = useDataContext();
+  const { interns, addIntern, updateIntern, deleteIntern, loading } = useDataContext();
   const { translations } = useSettings();
   const [searchTerm, setSearchTerm] = useState("");
   const [editingIntern, setEditingIntern] = useState<Intern | null>(null);

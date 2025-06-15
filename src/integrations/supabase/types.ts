@@ -123,6 +123,36 @@ export type Database = {
         }
         Relationships: []
       }
+      project_interns: {
+        Row: {
+          intern_id: string
+          project_id: string
+        }
+        Insert: {
+          intern_id: string
+          project_id: string
+        }
+        Update: {
+          intern_id?: string
+          project_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "project_interns_intern_id_fkey"
+            columns: ["intern_id"]
+            isOneToOne: false
+            referencedRelation: "interns"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "project_interns_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       projects: {
         Row: {
           created_at: string | null
@@ -131,6 +161,7 @@ export type Database = {
           id: string
           start_date: string
           status: string | null
+          tasks: Json | null
           title: string
           updated_at: string | null
           user_id: string | null
@@ -142,6 +173,7 @@ export type Database = {
           id?: string
           start_date: string
           status?: string | null
+          tasks?: Json | null
           title: string
           updated_at?: string | null
           user_id?: string | null
@@ -153,6 +185,7 @@ export type Database = {
           id?: string
           start_date?: string
           status?: string | null
+          tasks?: Json | null
           title?: string
           updated_at?: string | null
           user_id?: string | null

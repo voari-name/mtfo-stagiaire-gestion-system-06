@@ -9,7 +9,7 @@ import type { Intern } from "@/contexts/DataContext";
 interface InternCardProps {
   intern: Intern;
   onEdit: (intern: Intern) => void;
-  onDelete: (id: number) => void;
+  onDelete: (id: string) => void;
 }
 
 const InternCard = ({ intern, onEdit, onDelete }: InternCardProps) => {

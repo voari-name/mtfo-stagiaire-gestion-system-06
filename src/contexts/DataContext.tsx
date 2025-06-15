@@ -1,100 +1,138 @@
 
-import React, { createContext, useContext, ReactNode, useEffect } from "react";
-import { InternsProvider, useInternsContext } from "@/contexts/InternsContext";
-import { ProjectsProvider, useProjectsContext } from "@/contexts/ProjectsContext";
-import { EvaluationsProvider, useEvaluationsContext } from "@/contexts/EvaluationsContext";
-import { useProjectSync } from "@/hooks/useProjectSync";
+import React, { createContext, useContext, ReactNode, useState, useEffect, useMemo } from "react";
+import { useSupabaseData } from "@/hooks/useSupabaseData";
+import type { Intern, Project, EvaluationType, Task, ProjectIntern } from "@/types/dataTypes";
+import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
 
 // Re-export types for backward compatibility
-export type { Intern, Task, ProjectIntern, Project, EvaluationType } from "@/types/dataTypes";
+export type { Intern, Task, ProjectIntern, Project, EvaluationType };
 
 interface DataContextType {
-  // Interns
-  interns: any[];
-  addIntern: (intern: any) => void;
-  updateIntern: (intern: any) => void;
-  deleteIntern: (id: number) => void;
-  getCompletedInterns: () => any[];
+  interns: Intern[];
+  addIntern: (intern: Omit<TablesInsert<'interns'>, 'id' | 'created_at' | 'updated_at'> & { email: string }) => Promise<void>;
+  updateIntern: (intern: Intern) => Promise<void>;
+  deleteIntern: (id: string) => Promise<void>;
+  getCompletedInterns: () => Intern[];
   
-  // Projects
-  projects: any[];
-  addProject: (project: any) => void;
-  updateProject: (project: any) => void;
-  deleteProject: (id: number) => void;
+  projects: Project[];
+  addProject: (project: Omit<TablesInsert<'projects'>, 'id' | 'created_at' | 'updated_at'>) => Promise<Tables<'projects'> | undefined>;
+  updateProject: (id: string, updates: Partial<TablesUpdate<'projects'>>) => Promise<void>;
+  deleteProject: (id: string) => Promise<void>;
   
-  // Evaluations
-  evaluations: any[];
+  evaluations: EvaluationType[];
   addEvaluation: (evaluation: any) => void;
   updateEvaluation: (evaluation: any) => void;
-  deleteEvaluation: (id: number) => void;
+  deleteEvaluation: (id: string) => void;
+
+  loading: boolean;
 }
 
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-const DataProviderInner: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const internsContext = useInternsContext();
-  const projectsContext = useProjectsContext();
-  const evaluationsContext = useEvaluationsContext();
-  const { syncInternToProject } = useProjectSync();
+export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
+  const supabaseData = useSupabaseData();
+  const [projectsWithInterns, setProjectsWithInterns] = useState<Project[]>([]);
 
-  // Enhanced intern functions with project sync
-  const addIntern = (newIntern: any) => {
-    internsContext.addIntern(newIntern);
-    
-    // Auto-create project if intern is completed
-    if (newIntern.status === "fin") {
-      syncInternToProject(newIntern);
+  useEffect(() => {
+    const { projects, interns, projectInterns } = supabaseData;
+    if (projects.length && interns.length && projectInterns) {
+      const enrichedProjects = projects.map(project => {
+        const relatedInternIds = projectInterns
+          .filter(pi => pi.project_id === project.id)
+          .map(pi => pi.intern_id);
+        
+        const projectInternsData = interns
+          .filter(intern => relatedInternIds.includes(intern.id))
+          .map(intern => ({
+            id: intern.id,
+            name: `${intern.first_name} ${intern.last_name}`,
+            status: (intern.status as any) || 'début',
+            completion: intern.status === "fin" ? 100 : intern.status === "en cours" ? 50 : 0
+          }));
+
+        return {
+          ...project,
+          id: project.id,
+          title: project.title,
+          description: project.description || undefined,
+          startDate: project.start_date,
+          endDate: project.end_date,
+          tasks: (project.tasks as Task[]) || [],
+          interns: projectInternsData,
+        };
+      });
+      setProjectsWithInterns(enrichedProjects);
     }
+  }, [supabaseData.projects, supabaseData.interns, supabaseData.projectInterns]);
+
+  const mappedInterns = useMemo(() => {
+    return supabaseData.interns.map(intern => ({
+      ...intern,
+      id: intern.id,
+      firstName: intern.first_name,
+      lastName: intern.last_name,
+      startDate: intern.start_date,
+      endDate: intern.end_date,
+      status: (intern.status as any) || 'début',
+      gender: (intern.gender as any) || 'Masculin',
+      email: '' // Placeholder, as email is not in the interns table.
+    }));
+  }, [supabaseData.interns]);
+
+  const mappedEvaluations = useMemo(() => {
+    // This mapping is lossy as DB schema and UI type differ significantly
+    return supabaseData.evaluations.map(e => ({
+      id: e.id,
+      firstName: e.first_name,
+      lastName: e.last_name,
+      grade: e.grade,
+      comment: e.comments || '',
+      startDate: '', // Not in DB
+      endDate: '' // Not in DB
+    }))
+  }, [supabaseData.evaluations]);
+
+  const addIntern = async (newIntern: Omit<TablesInsert<'interns'>, 'id' | 'created_at' | 'updated_at'> & { email: string }) => {
+    // email is not part of interns table, so we omit it.
+    const { email, ...internData } = newIntern;
+    await supabaseData.addIntern(internData);
   };
-
-  const updateIntern = (updatedIntern: any) => {
-    internsContext.updateIntern(updatedIntern);
-    
-    // Auto-create project if intern is completed
-    if (updatedIntern.status === "fin") {
-      syncInternToProject(updatedIntern);
-    }
+  
+  const updateIntern = async (updatedIntern: Intern) => {
+    const { id, firstName, lastName, startDate, endDate, ...rest } = updatedIntern;
+    const updates: Partial<TablesUpdate<'interns'>> = {
+      ...rest,
+      first_name: firstName,
+      last_name: lastName,
+      start_date: startDate,
+      end_date: endDate,
+    };
+    await supabaseData.updateIntern(id, updates);
   };
 
   const value: DataContextType = {
-    // Interns
-    interns: internsContext.interns,
+    loading: supabaseData.loading,
+    interns: mappedInterns,
     addIntern,
     updateIntern,
-    deleteIntern: internsContext.deleteIntern,
-    getCompletedInterns: internsContext.getCompletedInterns,
+    deleteIntern: supabaseData.deleteIntern,
+    getCompletedInterns: () => mappedInterns.filter(i => i.status === 'fin'),
     
-    // Projects
-    projects: projectsContext.projects,
-    addProject: projectsContext.addProject,
-    updateProject: projectsContext.updateProject,
-    deleteProject: projectsContext.deleteProject,
+    projects: projectsWithInterns,
+    addProject: supabaseData.addProject,
+    updateProject: supabaseData.updateProject,
+    deleteProject: supabaseData.deleteProject,
     
-    // Evaluations
-    evaluations: evaluationsContext.evaluations,
-    addEvaluation: evaluationsContext.addEvaluation,
-    updateEvaluation: evaluationsContext.updateEvaluation,
-    deleteEvaluation: evaluationsContext.deleteEvaluation
+    evaluations: mappedEvaluations,
+    addEvaluation: supabaseData.addEvaluation,
+    updateEvaluation: supabaseData.updateEvaluation,
+    deleteEvaluation: supabaseData.deleteEvaluation,
   };
 
   return (
     <DataContext.Provider value={value}>
       {children}
     </DataContext.Provider>
-  );
-};
-
-export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  return (
-    <InternsProvider>
-      <ProjectsProvider>
-        <EvaluationsProvider>
-          <DataProviderInner>
-            {children}
-          </DataProviderInner>
-        </EvaluationsProvider>
-      </ProjectsProvider>
-    </InternsProvider>
   );
 };
 

@@ -1,7 +1,7 @@
 
 // Import types
 export interface Intern {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   title: string;
@@ -20,24 +20,25 @@ export interface Task {
 }
 
 export interface ProjectIntern {
-  id: number;
+  id: string;
   name: string;
   status: "début" | "en cours" | "fin";
   completion: number;
 }
 
 export interface Project {
-  id: number;
+  id: string;
   title: string;
   startDate: string;
   endDate: string;
   description?: string;
   interns: ProjectIntern[];
   tasks: Task[];
+  status?: string | null;
 }
 
 export interface EvaluationType {
-  id: number;
+  id: string;
   firstName: string;
   lastName: string;
   startDate: string;
