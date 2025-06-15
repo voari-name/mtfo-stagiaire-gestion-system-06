@@ -1,8 +1,8 @@
-
 import React, { createContext, useContext, ReactNode, useState, useEffect, useMemo } from "react";
 import { useSupabaseData } from "@/hooks/useSupabaseData";
 import type { Intern, Project, EvaluationType, Task, ProjectIntern } from "@/types/dataTypes";
 import type { Tables, TablesInsert, TablesUpdate } from "@/integrations/supabase/types";
+import { useSupabaseAuth } from "@/hooks/auth/useSupabaseAuth";
 
 // Re-export types for backward compatibility
 export type { Intern, Task, ProjectIntern, Project, EvaluationType };
@@ -15,7 +15,7 @@ interface DataContextType {
   getCompletedInterns: () => Intern[];
   
   projects: Project[];
-  addProject: (project: Omit<TablesInsert<'projects'>, 'id' | 'created_at' | 'updated_at'>) => Promise<Tables<'projects'> | undefined>;
+  addProject: (project: Omit<TablesInsert<'projects'>, 'id' | 'created_at' | 'updated_at' | 'user_id'>) => Promise<Tables<'projects'> | undefined>;
   updateProject: (id: string, updates: Partial<TablesUpdate<'projects'>>) => Promise<void>;
   deleteProject: (id: string) => Promise<void>;
   addProjectIntern: (projectIntern: TablesInsert<'project_interns'>) => Promise<void>;
@@ -32,6 +32,7 @@ const DataContext = createContext<DataContextType | undefined>(undefined);
 
 export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
   const supabaseData = useSupabaseData();
+  const { user } = useSupabaseAuth();
   const [projectsWithInterns, setProjectsWithInterns] = useState<Project[]>([]);
 
   useEffect(() => {
@@ -95,6 +96,10 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [supabaseData.evaluations]);
 
   const addIntern = async (newIntern: Omit<Intern, 'id'>) => {
+    if (!user) {
+      console.error("User not authenticated. Cannot add intern.");
+      return;
+    }
     console.log("💾 DataContext: Adding intern to Supabase database:", newIntern);
     // email is not part of interns table, so we omit it.
     const { firstName, lastName, startDate, endDate, email, ...rest } = newIntern;
@@ -105,6 +110,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       start_date: startDate,
       end_date: endDate,
       gender: rest.gender || 'Masculin',
+      user_id: user.id,
     };
     await supabaseData.addIntern(internData);
     console.log("✅ DataContext: Intern successfully added to database");
@@ -124,15 +130,31 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     console.log("✅ DataContext: Intern successfully updated in database");
   };
 
+  const addProject = async (project: Omit<TablesInsert<'projects'>, 'id' | 'created_at' | 'updated_at' | 'user_id'>): Promise<Tables<'projects'> | undefined> => {
+    if (!user) {
+      console.error("User not authenticated. Cannot add project.");
+      return undefined;
+    }
+    const projectData: TablesInsert<'projects'> = {
+      ...project,
+      user_id: user.id,
+    };
+    return supabaseData.addProject(projectData);
+  }
+
   const addEvaluation = (evaluation: Omit<EvaluationType, 'id'>) => {
+    if (!user) {
+      console.error("User not authenticated. Cannot add evaluation.");
+      return;
+    }
     console.log("💾 DataContext: Adding evaluation to Supabase database:", evaluation);
     const { firstName, lastName, comment, grade } = evaluation;
-    const evaluationData: Omit<Tables<'evaluations'>, 'id' | 'created_at' | 'updated_at' | 'user_id'> & { user_id: string | null } = {
+    const evaluationData: TablesInsert<'evaluations'> = {
       first_name: firstName,
       last_name: lastName,
       comments: comment,
       grade: grade,
-      user_id: null, // Or get current user id
+      user_id: user.id,
     };
     supabaseData.addEvaluation(evaluationData);
     console.log("✅ DataContext: Evaluation successfully added to database");
@@ -158,7 +180,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     getCompletedInterns: () => mappedInterns.filter(i => i.status === 'fin'),
     
     projects: projectsWithInterns,
-    addProject: supabaseData.addProject,
+    addProject,
     updateProject: supabaseData.updateProject,
     deleteProject: supabaseData.deleteProject,
     addProjectIntern: supabaseData.addProjectIntern,
