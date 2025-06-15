@@ -215,7 +215,7 @@ export const useSupabaseData = () => {
   };
 
   // Evaluation operations
-  const addEvaluation = async (evaluationData: Omit<Evaluation, 'id' | 'created_at' | 'updated_at'>) => {
+  const addEvaluation = async (evaluationData: TablesInsert<'evaluations'>) => {
     try {
       const { data, error } = await supabase
         .from('evaluations')
