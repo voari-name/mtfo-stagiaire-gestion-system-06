@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle, AlertDialogTrigger } from "@/components/ui/alert-dialog";
 import { Mail, Calendar, BookOpen, Star, UserCircle } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import type { Intern } from "@/contexts/DataContext";
+import type { Intern } from "@/types/dataTypes";
 
 interface InternCardProps {
   intern: Intern;

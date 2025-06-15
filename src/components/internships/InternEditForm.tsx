@@ -9,7 +9,7 @@ import { User, Calendar, Mail, BookOpen, Star, UserCircle, Sparkles, GraduationC
 import { useToast } from "@/hooks/use-toast";
 import { useSettings } from "@/contexts/SettingsContext";
 import PhotoUpload from "@/components/PhotoUpload";
-import type { Intern } from "@/contexts/DataContext";
+import type { Intern } from "@/types/dataTypes";
 
 interface InternEditFormProps {
   isOpen: boolean;

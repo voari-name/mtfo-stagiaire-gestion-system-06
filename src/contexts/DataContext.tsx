@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, ReactNode, useState, useEffect, useMemo } from "react";
 import { useSupabaseData } from "@/hooks/useSupabaseData";
 import type { Intern, Project, EvaluationType, Task, ProjectIntern } from "@/types/dataTypes";
@@ -66,6 +67,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [supabaseData.projects, supabaseData.interns, supabaseData.projectInterns]);
 
   const mappedInterns = useMemo(() => {
+    console.log("📊 DataContext: Mapping interns from Supabase:", supabaseData.interns.length, "interns");
     return supabaseData.interns.map(intern => ({
       ...intern,
       id: intern.id,
@@ -93,6 +95,7 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   }, [supabaseData.evaluations]);
 
   const addIntern = async (newIntern: Omit<Intern, 'id'>) => {
+    console.log("💾 DataContext: Adding intern to Supabase database:", newIntern);
     // email is not part of interns table, so we omit it.
     const { firstName, lastName, startDate, endDate, email, ...rest } = newIntern;
     const internData: TablesInsert<'interns'> = {
@@ -104,9 +107,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       gender: rest.gender || 'Masculin',
     };
     await supabaseData.addIntern(internData);
+    console.log("✅ DataContext: Intern successfully added to database");
   };
   
   const updateIntern = async (updatedIntern: Intern) => {
+    console.log("💾 DataContext: Updating intern in Supabase database:", updatedIntern);
     const { id, firstName, lastName, startDate, endDate, ...rest } = updatedIntern;
     const updates: Partial<TablesUpdate<'interns'>> = {
       ...rest,
@@ -116,9 +121,11 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       end_date: endDate,
     };
     await supabaseData.updateIntern(id, updates);
+    console.log("✅ DataContext: Intern successfully updated in database");
   };
 
   const addEvaluation = (evaluation: Omit<EvaluationType, 'id'>) => {
+    console.log("💾 DataContext: Adding evaluation to Supabase database:", evaluation);
     const { firstName, lastName, comment, grade } = evaluation;
     const evaluationData: Omit<Tables<'evaluations'>, 'id' | 'created_at' | 'updated_at' | 'user_id'> & { user_id: string | null } = {
       first_name: firstName,
@@ -128,15 +135,18 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
       user_id: null, // Or get current user id
     };
     supabaseData.addEvaluation(evaluationData);
+    console.log("✅ DataContext: Evaluation successfully added to database");
   };
 
   const updateEvaluation = (id: string, evaluation: Partial<EvaluationType>) => {
+    console.log("💾 DataContext: Updating evaluation in Supabase database:", id, evaluation);
     const { firstName, lastName, comment, startDate, endDate, ...rest } = evaluation;
     const updates: Partial<TablesUpdate<'evaluations'>> = { ...rest };
     if (firstName) updates.first_name = firstName;
     if (lastName) updates.last_name = lastName;
     if (comment) updates.comments = comment;
     supabaseData.updateEvaluation(id, updates);
+    console.log("✅ DataContext: Evaluation successfully updated in database");
   };
 
   const value: DataContextType = {
@@ -158,6 +168,16 @@ export const DataProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     updateEvaluation,
     deleteEvaluation: supabaseData.deleteEvaluation,
   };
+
+  // Log when data is loaded from database
+  useEffect(() => {
+    if (!supabaseData.loading) {
+      console.log("🎯 DataContext: Data successfully loaded from Supabase:");
+      console.log("  - Interns:", mappedInterns.length);
+      console.log("  - Projects:", projectsWithInterns.length);
+      console.log("  - Evaluations:", mappedEvaluations.length);
+    }
+  }, [supabaseData.loading, mappedInterns.length, projectsWithInterns.length, mappedEvaluations.length]);
 
   return (
     <DataContext.Provider value={value}>
