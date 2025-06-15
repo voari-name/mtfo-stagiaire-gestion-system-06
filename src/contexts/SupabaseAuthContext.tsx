@@ -11,7 +11,7 @@ interface SupabaseAuthContextType {
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<boolean>;
   signup: (email: string, password: string, userData?: any) => Promise<boolean>;
-  logout: () => Promise<void>;
+  logout: (redirectTo?: string) => Promise<void>;
   updateProfile: (userData: any) => Promise<boolean>;
   resendConfirmationEmail: (email: string) => Promise<boolean>;
   resetPasswordForEmail: (email: string) => Promise<boolean>;

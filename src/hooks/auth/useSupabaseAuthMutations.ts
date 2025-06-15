@@ -117,7 +117,7 @@ export const useSupabaseAuthMutations = () => {
     }
   };
 
-  const logout = async (): Promise<void> => {
+  const logout = async (redirectTo = '/'): Promise<void> => {
     try {
       setOperationsLoading(true);
       
@@ -132,7 +132,7 @@ export const useSupabaseAuthMutations = () => {
         description: "À bientôt!",
       });
       
-      navigate('/');
+      navigate(redirectTo);
     } catch (err: any) {
       console.error('Erreur lors de la déconnexion:', err);
       toast({

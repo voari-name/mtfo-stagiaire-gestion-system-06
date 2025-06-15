@@ -1,6 +1,5 @@
 
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useSupabaseAuthContext } from '@/contexts/SupabaseAuthContext';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
@@ -10,10 +9,9 @@ import { useToast } from '@/hooks/use-toast';
 
 const UpdatePassword = () => {
   const [password, setPassword] = useState('');
-  const { updateUserPassword, loading } = useSupabaseAuthContext();
+  const { updateUserPassword, loading, logout } = useSupabaseAuthContext();
   const [message, setMessage] = useState('');
   const [error, setError] = useState('');
-  const navigate = useNavigate();
   const { toast } = useToast();
 
   const handleUpdatePassword = async (e: React.FormEvent) => {
@@ -28,9 +26,9 @@ const UpdatePassword = () => {
     if (success) {
       toast({
         title: "Mot de passe mis à jour",
-        description: "Vous allez être redirigé vers le tableau de bord."
+        description: "Veuillez vous connecter avec votre nouveau mot de passe."
       });
-      setTimeout(() => navigate('/dashboard'), 2000);
+      await logout('/auth');
     } else {
       setError("Une erreur est survenue lors de la mise à jour. Veuillez réessayer.");
     }
