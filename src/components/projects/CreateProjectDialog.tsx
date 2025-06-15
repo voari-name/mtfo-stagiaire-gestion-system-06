@@ -39,13 +39,10 @@ const CreateProjectDialog: React.FC<CreateProjectDialogProps> = ({
     }
 
     const newProject = {
-      id: Date.now(),
       title: formData.title,
-      startDate: formData.startDate,
-      endDate: formData.endDate,
+      start_date: formData.startDate,
+      end_date: formData.endDate,
       description: formData.description,
-      interns: [],
-      tasks: []
     };
 
     onProjectCreated(newProject);
