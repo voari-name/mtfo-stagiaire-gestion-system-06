@@ -74,8 +74,8 @@ const SupabaseLoginForm = () => {
     <form onSubmit={handleLogin}>
       <CardContent className="space-y-4 animate-fade-in">
         <div className="space-y-2">
-          <Label htmlFor="email">Nom d'utilisateur ou Email</Label>
-          <Input id="email" type="text" placeholder="Entrez votre nom d'utilisateur ou email" value={email} onChange={(e) => setEmail(e.target.value)} required className="transition-all duration-300 focus:scale-105" disabled={loading} />
+          <Label htmlFor="email">Email</Label>
+          <Input id="email" type="email" placeholder="Entrez votre email" value={email} onChange={(e) => setEmail(e.target.value)} required className="transition-all duration-300 focus:scale-105" disabled={loading} />
         </div>
         <div className="space-y-2">
           <Label htmlFor="password">Mot de passe</Label>

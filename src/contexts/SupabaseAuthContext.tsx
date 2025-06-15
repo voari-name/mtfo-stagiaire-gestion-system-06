@@ -10,7 +10,7 @@ interface SupabaseAuthContextType {
   error: string | null;
   setError: (error: string | null) => void;
   isAuthenticated: boolean;
-  login: (loginIdentifier: string, password: string) => Promise<boolean>;
+  login: (email: string, password: string) => Promise<boolean>;
   signup: (email: string, password: string, userData?: any) => Promise<boolean>;
   logout: (redirectTo?: string) => Promise<void>;
   updateProfile: (userData: any) => Promise<boolean>;
