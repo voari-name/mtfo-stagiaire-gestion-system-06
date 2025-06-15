@@ -1,5 +1,6 @@
 
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -16,10 +17,14 @@ const SupabaseLoginForm = () => {
   const [username, setUsername] = useState("");
   const { login, signup, loading, error, resetPasswordForEmail, resendConfirmationEmail } = useSupabaseAuthContext();
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    await login(email, password);
+    const success = await login(email, password);
+    if (success) {
+      navigate('/dashboard');
+    }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
@@ -184,3 +189,4 @@ const SupabaseLoginForm = () => {
 };
 
 export default SupabaseLoginForm;
+
