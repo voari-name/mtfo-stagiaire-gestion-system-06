@@ -1,4 +1,3 @@
-
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useNavigate } from 'react-router-dom';
@@ -66,8 +65,6 @@ export const useLogin = ({ setLoading, setError }: UseLoginProps) => {
       
       if (err.message?.includes('Invalid login credentials')) {
         errorMessage = 'Nom d\'utilisateur ou mot de passe incorrect';
-      } else if (err.message?.includes('Email not confirmed')) {
-        errorMessage = `Mila manamarina ny mailakao aloha ianao vao afaka miditra. (${email}) Jereo ny boaty fandraisanao mailaka (inbox).`;
       } else if (err.message) {
         errorMessage = err.message;
       }

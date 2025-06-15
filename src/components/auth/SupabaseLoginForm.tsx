@@ -13,7 +13,7 @@ const SupabaseLoginForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
-  const { login, signup, loading, error, resendConfirmationEmail, resetPasswordForEmail } = useSupabaseAuthContext();
+  const { login, signup, loading, error, resetPasswordForEmail } = useSupabaseAuthContext();
   const { toast } = useToast();
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -30,19 +30,6 @@ const SupabaseLoginForm = () => {
     });
   };
   
-  const handleResendConfirmation = async () => {
-    if (error) {
-      const emailMatch = error.match(/\(([^)]+)\)/);
-      const emailToResend = emailMatch ? emailMatch[1] : email;
-
-      if (emailToResend) {
-        await resendConfirmationEmail(emailToResend);
-      } else {
-        toast({ title: "Erreur", description: "Impossible de trouver l'email à utiliser pour le renvoi.", variant: "destructive" });
-      }
-    }
-  };
-
   const handlePasswordResetRequest = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!email) {
@@ -72,12 +59,7 @@ const SupabaseLoginForm = () => {
         </div>
         {error && (
           <div className="bg-red-50 text-red-700 px-4 py-2 rounded-md text-sm animate-fade-in">
-            <p>{error.split('(')[0].trim()}</p>
-            {error.includes("manamarina ny mailakao") && (
-              <Button variant="link" type="button" onClick={handleResendConfirmation} disabled={loading} className="p-0 h-auto mt-2 text-red-700 font-bold hover:underline">
-                {loading ? "Mandefa..." : "Alefaso indray ny mailaka fanamarinana"}
-              </Button>
-            )}
+            <p>{error}</p>
           </div>
         )}
       </CardContent>
