@@ -10,21 +10,22 @@ export const useSupabaseAuthState = () => {
 
   // Initialize auth state
   useEffect(() => {
-    // Set up auth state listener
+    setLoading(true);
+    
+    // Set up auth state listener to react to any auth changes
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
         console.log('Auth state changed:', event, session?.user?.email);
         setSession(session);
         setUser(session?.user ?? null);
-        setLoading(false);
       }
     );
 
-    // Check for existing session
+    // Check for existing session on initial load
     supabase.auth.getSession().then(({ data: { session } }) => {
       setSession(session);
       setUser(session?.user ?? null);
-      setLoading(false);
+      setLoading(false); // Initial auth check is done
     });
 
     return () => subscription.unsubscribe();
