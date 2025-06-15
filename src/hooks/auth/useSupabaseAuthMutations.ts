@@ -1,4 +1,3 @@
-
 import { useState } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -32,6 +31,7 @@ export const useSupabaseAuthMutations = () => {
           title: "Connexion réussie",
           description: "Bienvenue sur la plateforme de gestion",
         });
+        navigate('/dashboard');
         return true;
       }
 
@@ -183,11 +183,51 @@ export const useSupabaseAuthMutations = () => {
     }
   };
 
+  const resendConfirmationEmail = async (email: string): Promise<boolean> => {
+    try {
+      setOperationsLoading(true);
+      setError(null);
+
+      const { error: resendError } = await supabase.auth.resend({
+        type: 'signup',
+        email: email,
+        options: {
+          emailRedirectTo: `${window.location.origin}/`,
+        },
+      });
+
+      if (resendError) {
+        throw resendError;
+      }
+
+      toast({
+        title: "Mail de confirmation renvoyé",
+        description: "Vérifiez votre email pour confirmer votre compte.",
+      });
+      return true;
+    } catch (err: any)
+    {
+      console.error("Erreur lors du renvoi de l'email de confirmation:", err);
+      const errorMessage = err.message || "Erreur lors du renvoi de l'email";
+      setError(errorMessage);
+      toast({
+        title: "Erreur",
+        description: errorMessage,
+        variant: "destructive"
+      });
+      return false;
+    } finally {
+      setOperationsLoading(false);
+    }
+  };
+
+
   return {
     login,
     signup,
     logout,
     updateProfile,
+    resendConfirmationEmail,
     loading: operationsLoading,
     error,
     setError,

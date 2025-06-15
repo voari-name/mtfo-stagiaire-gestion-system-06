@@ -10,6 +10,7 @@ export const useSupabaseAuth = () => {
     signup, 
     logout, 
     updateProfile: updateProfileMutation,
+    resendConfirmationEmail,
     loading: operationsLoading,
     error,
     setError
@@ -33,6 +34,7 @@ export const useSupabaseAuth = () => {
     login,
     signup,
     logout,
-    updateProfile
+    updateProfile,
+    resendConfirmationEmail
   };
 };

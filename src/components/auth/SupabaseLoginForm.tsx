@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -13,7 +12,7 @@ const SupabaseLoginForm = () => {
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
-  const { login, signup, loading, error } = useSupabaseAuthContext();
+  const { login, signup, loading, error, resendConfirmationEmail } = useSupabaseAuthContext();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,6 +26,12 @@ const SupabaseLoginForm = () => {
       first_name: firstName,
       last_name: lastName
     });
+  };
+  
+  const handleResendConfirmation = async () => {
+    if (email) {
+      await resendConfirmationEmail(email);
+    }
   };
 
   return (
@@ -82,7 +87,18 @@ const SupabaseLoginForm = () => {
               </div>
               {error && (
                 <div className="bg-red-50 text-red-700 px-4 py-2 rounded-md text-sm animate-fade-in">
-                  {error}
+                  <p>{error}</p>
+                  {error.includes("manamarina ny mailakao") && (
+                    <Button
+                      variant="link"
+                      type="button"
+                      onClick={handleResendConfirmation}
+                      disabled={loading}
+                      className="p-0 h-auto mt-2 text-red-700 font-bold hover:underline"
+                    >
+                      {loading ? "Mandefa..." : "Alefaso indray ny mailaka fanamarinana"}
+                    </Button>
+                  )}
                 </div>
               )}
             </CardContent>
