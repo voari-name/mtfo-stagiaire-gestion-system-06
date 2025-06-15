@@ -1,8 +1,8 @@
-
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Toaster } from "@/components/ui/toaster";
 import { SettingsProvider } from '@/contexts/SettingsContext';
 import { SupabaseAuthProvider } from '@/contexts/SupabaseAuthContext';
+import { DataProvider } from '@/contexts/DataContext';
 import Index from '@/pages/Index';
 import SupabaseLogin from '@/pages/SupabaseLogin';
 import UpdatePassword from '@/pages/UpdatePassword';
@@ -94,7 +94,9 @@ function App() {
     <Router>
       <SupabaseAuthProvider>
         <SettingsProvider>
-          <MainContent />
+          <DataProvider>
+            <MainContent />
+          </DataProvider>
         </SettingsProvider>
       </SupabaseAuthProvider>
     </Router>
